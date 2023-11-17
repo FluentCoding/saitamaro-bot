@@ -1,4 +1,4 @@
-let authToken = btoa("a")
+let authToken = ""
 window.fetch = new Proxy(window.fetch, {
     apply: function (target, that, args) {
         if (!args[1]) args[1] = {}

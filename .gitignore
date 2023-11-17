@@ -1,3 +1,4 @@
-.env.json
-saitamaros-db.json
 node_modules
+
+.env.json
+guides.json
