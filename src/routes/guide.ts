@@ -1,0 +1,51 @@
+import { FastifyInstance } from "fastify"
+import { allGuides, getGuide, newGuide, removeGuide, setGuide } from "../features/store/guides"
+import { checkToken } from "../middleware/auth"
+import { getChampions, randomSplashArtUrl } from "../features/riot/champs"
+import { renderPreview } from "../features/image/renderPreview"
+
+export default function registerGuideRoutes(app: FastifyInstance) {
+    app.addHook('onRequest', checkToken(["/guide/", "/guides"]))
+    app.get('/guides', async (req, reply) => {
+        return Object.keys((await allGuides()))
+    })
+    app.get('/guide/:champion', async (req) => {
+        const { champion } = req.params as { champion: string }
+        const guide = await getGuide(champion)
+        if (guide) {
+            return { ...guide, name: champion }
+        }
+    })
+    app.get('/guide/new/:champion', async (req, reply) => {
+        const { champion } = req.params as { champion: string }
+
+        if (await getGuide(champion) || !(await getChampions()).includes(champion)) {
+            reply.status(500).send()
+            return
+        }
+
+        await newGuide(champion)
+        console.log(champion, "guide created.")
+    })
+    app.get('/guide/remove/:champion', async (req) => {
+        const { champion } = req.params as { champion: string }
+        await removeGuide(champion)
+        console.log(champion, "guide removed.")
+        return {}
+    })
+    app.get('/guide/image/:champion', async (req, reply) => {
+        const { champion } = req.params as { champion: string }
+        const guide = await getGuide(champion)
+        if (!guide) return undefined
+        reply.type('image/png')
+        reply.send(await renderPreview(await randomSplashArtUrl(champion), guide.image.runes, guide.image.starter, guide.image.difficulty, guide.image.smallText))
+    })
+    app.post('/guide/save/:champion', async (req) => {
+        const { champion } = req.params as { champion: string }
+        const { name, ...guide } = JSON.parse(req.body as string)
+        console.log(guide)
+        await setGuide(champion, guide)
+        console.log(champion, "guide updated.")
+        return {}
+    })
+}
