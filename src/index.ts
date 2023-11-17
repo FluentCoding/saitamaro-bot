@@ -52,4 +52,4 @@ app.register(require('@fastify/static'), {
 registerGuideRoutes(app)
 registerRiotRoutes(app)
 
-app.listen({ port: 4000 })
+app.listen({ host: '0.0.0.0', port: 4000 })
