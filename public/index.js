@@ -176,7 +176,6 @@ function storeGuideValues() {
         currentGuideView.guide.image.runes = [...document.querySelectorAll('.rune.active')].map((e) => e.id)
     } else {
         currentGuideView.guide.contents[Object.keys(currentGuideView.guide.contents)[currentGuideView.pageTab]] = document.getElementById("page-text").value
-        // todo
     }
     console.log("Updated:", currentGuideView.guide)
     return true
