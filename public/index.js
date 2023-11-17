@@ -64,7 +64,7 @@ function renamePage() {
     const oldPage = Object.keys(currentGuideView.guide.contents)[currentGuideView.pageTab]
     // removing non-ascii characters, 40 characters max
     const newPage = prompt("Enter new page name")?.replace(/[^\x00-\x7F]/g, "").substring(0, 40)
-    if (newPage === null) return
+    if (newPage === undefined) return
 
     if (newPage.length < 3) {
         alert("Too short! 3 characters or more.")
