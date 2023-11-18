@@ -1,4 +1,4 @@
-import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionReplyOptions, SlashCommandBuilder, codeBlock } from "discord.js";
+import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionReplyOptions, SlashCommandBuilder, codeBlock, escapeCodeBlock } from "discord.js";
 import { randomSplashArtUrl, splashArtUrl } from "../features/riot/champs";
 import { allGuides, getGuide } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
@@ -13,7 +13,7 @@ async function guideReply(champion: string, topic?: string) {
     const actualTopic = (topic && guide.contents[topic] !== undefined) ? topic : topics[0]
     const content = guide.contents[actualTopic]
     return {
-        content: codeBlock(content),
+        content: codeBlock(escapeCodeBlock(content)),
         components: [new ActionRowBuilder().addComponents(
             ...topics.map((topic) => createButton(topic, {
                 command: "guide",
