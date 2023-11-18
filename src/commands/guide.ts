@@ -9,16 +9,17 @@ async function guideReply(champion: string, topic?: string) {
     const guide = await getGuide(champion)
     if (!guide) return undefined
     const topics = Object.keys(guide.contents)
-    const content = guide.contents[topic ?? topics[0]]
+    // in case we removed/renamed the topic after the initial message has been sent
+    const actualTopic = (topic && guide.contents[topic] !== undefined) ? topic : topics[0]
+    const content = guide.contents[actualTopic]
     return {
-        // in case we removed/renamed the topic after the initial message has been sent
-        content: codeBlock(content === undefined ? guide.contents[topics[0]] : content),
+        content: codeBlock(content),
         components: [new ActionRowBuilder().addComponents(
             ...topics.map((topic) => createButton(topic, {
                 command: "guide",
                 action: topic,
-                champion
-            })),
+                champion,
+            }, topic == actualTopic ? ButtonStyle.Success : ButtonStyle.Primary)),
             new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)
         )],
         files: [{
