@@ -54,6 +54,11 @@ export default {
         await interaction.respond(searchResult.map((c) => ({name: c, value: c})))
     },
     button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champion: string }) => {
-        await interaction.update(await guideReply(metadata.champion, metadata.action))
+        const reply = await guideReply(metadata.champion, metadata.action)
+        if (reply) {
+            await interaction.update(reply)
+        } else {
+            await interaction.reply({ content: 'Guide got removed!', ephemeral: true })
+        }
     }
 }
