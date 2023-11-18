@@ -13,7 +13,7 @@ async function guideReply(champion: string, topic?: string) {
     const actualTopic = (topic && guide.contents[topic] !== undefined) ? topic : topics[0]
     const content = guide.contents[actualTopic]
     return {
-        content: codeBlock(content.replace("`", "`​")),
+        content: codeBlock(content.replace("`", "`​").substring(0, 2000)),
         components: [new ActionRowBuilder().addComponents(
             ...topics.map((topic) => createButton(topic, {
                 command: "guide",
