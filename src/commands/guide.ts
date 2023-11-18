@@ -40,12 +40,13 @@ export default {
            option.setName("champion").setDescription("Yone vs. x").setRequired(true).setAutocomplete(true)
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
+        await interaction.deferReply()
         const champion = interaction.options.getString("champion")
         const reply = await guideReply(interaction.user.id, champion, interaction.channelId)
         if (reply) {
-            await interaction.reply(reply)
+            await interaction.editReply(reply)
         } else {
-            await interaction.reply({ content: 'No guide exists for this champion!', ephemeral: true })
+            await interaction.followUp({ content: 'No guide exists for this champion!', ephemeral: true })
         }
     },
     autocomplete: async (interaction: AutocompleteInteraction) => {
@@ -65,11 +66,12 @@ export default {
             await interaction.reply({ content: 'You can only navigate your own guides! Check out `/guides`!', ephemeral: true })
             return
         }
+        await interaction.deferUpdate()
         const reply = await guideReply(metadata.iss, metadata.champ, interaction.channelId, metadata.action)
         if (reply) {
-            await interaction.update(reply)
+            await interaction.editReply(reply)
         } else {
-            await interaction.reply({ content: 'Guide got removed!', ephemeral: true })
+            await interaction.followUp({ content: 'Guide got removed!', ephemeral: true })
         }
     }
 }

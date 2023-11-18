@@ -132,6 +132,7 @@ async function renderGuide(champion, tab = 'properties', pageTab = 0) {
     })
     document.querySelector(`#guide-tabs > #${tab}`).classList.add("active")
     // set values
+    renderVisibility()
     if (currentGuideView.isPropertiesTab) {
         document.getElementById(guide.image.starter).setAttribute("selected", true)
         document.getElementById(`diff-${guide.image.difficulty}`).setAttribute("selected", true)
@@ -153,7 +154,6 @@ async function renderGuide(champion, tab = 'properties', pageTab = 0) {
                 runeBtn.classList.add("active")
             }
         })
-        renderVisibility()
         await renderImage()
     } else {
         document.getElementsByClassName("page")[pageTab].classList.add("active");
