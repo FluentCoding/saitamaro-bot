@@ -153,6 +153,7 @@ async function renderGuide(champion, tab = 'properties', pageTab = 0) {
                 runeBtn.classList.add("active")
             }
         })
+        renderVisibility()
         await renderImage()
     } else {
         document.getElementsByClassName("page")[pageTab].classList.add("active");
@@ -180,6 +181,19 @@ function storeGuideValues() {
     }
     console.log("Updated:", currentGuideView.guide)
     return true
+}
+
+function renderVisibility() {
+    document.getElementById("visibility").textContent = currentGuideView.guide.public ? "Public" : "Private"
+}
+
+async function toggleVisibility() {
+    currentGuideView.guide.public = !currentGuideView.guide.public
+    await fetch(`/guide/visibility/${currentGuideView.guide.name}`, {
+        method: 'POST',
+        body: JSON.stringify({ public: currentGuideView.guide.public })
+    })
+    renderVisibility()
 }
 
 async function removeGuide() {

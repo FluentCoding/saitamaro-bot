@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify"
-import { allGuides, getGuide, newGuide, removeGuide, setGuide } from "../features/store/guides"
+import { allGuides, getGuide, newGuide, removeGuide, setGuide, setGuideVisibility } from "../features/store/guides"
 import { checkToken } from "../middleware/auth"
 import { getChampions, randomSplashArtUrl } from "../features/riot/champs"
 import { renderPreview } from "../features/image/renderPreview"
@@ -47,5 +47,11 @@ export default function registerGuideRoutes(app: FastifyInstance) {
         await setGuide(champion, guide)
         console.log(champion, "guide updated.")
         return {}
+    })
+    app.post('/guide/visibility/:champion', async (req) => {
+        const { champion } = req.params as { champion: string }
+        const visibility = JSON.parse(req.body as string)["public"]
+        await setGuideVisibility(champion, visibility)
+        console.log(champion, "visibility toggled.")
     })
 }

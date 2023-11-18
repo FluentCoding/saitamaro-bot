@@ -1,13 +1,16 @@
 import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionReplyOptions, SlashCommandBuilder, codeBlock, escapeCodeBlock } from "discord.js";
-import { randomSplashArtUrl, splashArtUrl } from "../features/riot/champs";
-import { allGuides, getGuide } from "../features/store/guides";
+import { randomSplashArtUrl } from "../features/riot/champs";
+import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
 import { renderPreview } from "../features/image/renderPreview";
-import { feedbackChannelUrl } from "../../.env.json"
+import { feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json"
 
-async function guideReply(issuer: string, champion: string, topic?: string) {
-    const guide = await getGuide(champion)
-    if (!guide) return undefined
+async function guideReply(issuer: string, champion: string, channelId: string, topic?: string) {
+    const guideResult = await getGuideCaseInsensitive(champion)
+    if (!guideResult || (channelId != unrestrictedChannelId && !guideResult.guide.public)) return undefined
+    const guide = guideResult.guide
+    champion = guideResult.name
+    
     const topics = Object.keys(guide.contents)
     // in case we removed/renamed the topic after the initial message has been sent
     const actualTopic = (topic && guide.contents[topic] !== undefined) ? topic : topics[0]
@@ -21,7 +24,7 @@ async function guideReply(issuer: string, champion: string, topic?: string) {
                 iss: issuer,
                 champ: champion,
             }, topic == actualTopic ? ButtonStyle.Success : ButtonStyle.Primary)),
-            new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)
+            ...(feedbackChannelUrl ? [new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)] : [])
         )],
         files: [{
             attachment: await renderPreview(await randomSplashArtUrl(champion), guide.image.runes, guide.image.starter, guide.image.difficulty, guide.image.smallText)
@@ -38,7 +41,7 @@ export default {
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const champion = interaction.options.getString("champion")
-        const reply = await guideReply(interaction.user.id, champion)
+        const reply = await guideReply(interaction.user.id, champion, interaction.channelId)
         if (reply) {
             await interaction.reply(reply)
         } else {
@@ -46,9 +49,11 @@ export default {
         }
     },
     autocomplete: async (interaction: AutocompleteInteraction) => {
-        const champions = Object.keys(await allGuides())
+        const guides = await allGuides()
+        const champions = Object.keys(guides)
         const searchQuery = interaction.options.getFocused().toLowerCase()
-        const searchResult = champions.filter((c) => c.toLowerCase().startsWith(searchQuery))
+        let searchResult = champions.filter((c) => c.toLowerCase().startsWith(searchQuery))
+        if (interaction.channelId != unrestrictedChannelId) searchResult = searchResult.filter((c) => guides[c].public)
         if (searchResult.length > 25) {
             await interaction.respond([])
             return
@@ -60,7 +65,7 @@ export default {
             await interaction.reply({ content: 'You can only navigate your own guides! Check out `/guides`!', ephemeral: true })
             return
         }
-        const reply = await guideReply(metadata.iss, metadata.champ, metadata.action)
+        const reply = await guideReply(metadata.iss, metadata.champ, interaction.channelId, metadata.action)
         if (reply) {
             await interaction.update(reply)
         } else {

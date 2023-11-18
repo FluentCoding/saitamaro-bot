@@ -44,7 +44,6 @@ client.on(Events.InteractionCreate, async interaction => {
 client.login(token)
 
 const app = fastify()
-console.log(path.join(__dirname, '../public'))
 app.register(require('@fastify/static'), {
     root: path.join(__dirname, '../public'),
     prefix: '/dashboard'
