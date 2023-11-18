@@ -5,7 +5,7 @@ import { ButtonMetadata, createButton } from "../util/discord";
 import { renderPreview } from "../features/image/renderPreview";
 import { feedbackChannelUrl } from "../../.env.json"
 
-async function guideReply(champion: string, topic?: string) {
+async function guideReply(issuer: string, champion: string, topic?: string) {
     const guide = await getGuide(champion)
     if (!guide) return undefined
     const topics = Object.keys(guide.contents)
@@ -18,7 +18,8 @@ async function guideReply(champion: string, topic?: string) {
             ...topics.map((topic) => createButton(topic, {
                 command: "guide",
                 action: topic,
-                champion,
+                iss: issuer,
+                champ: champion,
             }, topic == actualTopic ? ButtonStyle.Success : ButtonStyle.Primary)),
             new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)
         )],
@@ -37,7 +38,7 @@ export default {
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         const champion = interaction.options.getString("champion")
-        const reply = await guideReply(champion)
+        const reply = await guideReply(interaction.user.id, champion)
         if (reply) {
             await interaction.reply(reply)
         } else {
@@ -54,8 +55,12 @@ export default {
         }
         await interaction.respond(searchResult.map((c) => ({name: c, value: c})))
     },
-    button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champion: string }) => {
-        const reply = await guideReply(metadata.champion, metadata.action)
+    button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champ: string, iss: string }) => {
+        if (metadata.iss != interaction.user.id) {
+            await interaction.reply({ content: 'You can only navigate your own guides! Check out `/guides`!', ephemeral: true })
+            return
+        }
+        const reply = await guideReply(metadata.iss, metadata.champ, metadata.action)
         if (reply) {
             await interaction.update(reply)
         } else {
