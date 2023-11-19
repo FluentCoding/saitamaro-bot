@@ -3,6 +3,7 @@ import { allGuides, getGuide, newGuide, removeGuide, setGuide, setGuideVisibilit
 import { checkToken } from "../middleware/auth"
 import { getChampions, randomSplashArtUrl } from "../features/riot/champs"
 import { renderPreview } from "../features/image/renderPreview"
+import { randomPreview } from "../features/image/cache"
 
 export default function registerGuideRoutes(app: FastifyInstance) {
     app.addHook('onRequest', checkToken(["/guide/", "/guides"]))
@@ -38,7 +39,7 @@ export default function registerGuideRoutes(app: FastifyInstance) {
         const guide = await getGuide(champion)
         if (!guide) return undefined
         reply.type('image/png')
-        reply.send(await renderPreview(await randomSplashArtUrl(champion), guide))
+        reply.send(await randomPreview(champion, guide))
     })
     app.post('/guide/save/:champion', async (req) => {
         const { champion } = req.params as { champion: string }
