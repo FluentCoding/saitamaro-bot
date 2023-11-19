@@ -101,7 +101,6 @@ function resetGuideView() {
 }
 
 async function renderImage() {
-    if (!currentGuideView.isPropertiesTab) return
     function urlContentToDataUri(url){
         return fetch(url)
             .then(response => response.blob())
@@ -131,6 +130,7 @@ async function renderGuide(champion, tab = 'properties', pageTab = 0) {
     if (currentGuideView.isPropertiesTab) {
         document.getElementById(guide.image.starter).setAttribute("selected", true)
         document.getElementById(`diff-${guide.image.difficulty}`).setAttribute("selected", true)
+        insertRunes()
         guide.image.runes.forEach((v) => document.getElementById(v).classList.add("active"))
         document.querySelectorAll('.rune').forEach((runeBtn, i) => {
             runeBtn.onclick = () => {
@@ -176,6 +176,25 @@ function storeGuideValues() {
     }
     console.log("Updated:", currentGuideView.guide)
     return true
+}
+
+function insertRunes() {
+    const runeSelect = document.getElementById("rune-select");
+    [
+        ["Demolish", "Font of Life", "Shield Bash"],
+        ["Conditioning", "Second Wind", "Bone Plating"],
+        ["Overgrowth", "Revitalize", "Unflinching"]
+    ].forEach((arr) => {
+        const container = document.createElement("div")
+        for (let rune of arr) {
+            const runeBtn = document.createElement("button")
+            runeBtn.classList.add("btn", "rune")
+            runeBtn.id = rune.toUpperCase()
+            runeBtn.textContent = rune
+            container.appendChild(runeBtn)
+        }
+        runeSelect.appendChild(container)
+    })
 }
 
 function renderVisibility() {
