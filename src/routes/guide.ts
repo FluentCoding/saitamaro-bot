@@ -6,8 +6,8 @@ import { randomPreview } from "../features/image/cache"
 
 export default function registerGuideRoutes(app: FastifyInstance) {
     secureRoutes(app, "/guide/", "/guides")
-    app.get('/guides', async (req, reply) => {
-        return Object.keys((await allGuides()))
+    app.get('/guides', async () => {
+        return Object.keys(await allGuides())
     })
     app.get('/guide/:champion', async (req) => {
         const { champion } = req.params as { champion: Champion }

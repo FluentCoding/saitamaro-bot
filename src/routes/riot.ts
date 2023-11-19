@@ -5,7 +5,7 @@ import { getChampions } from "../features/riot/champs"
 
 export default function registerRiotRoutes(app: FastifyInstance) {
     secureRoutes(app, "/riot/")
-    app.get('/riot/open-champs', async (req, reply) => {
+    app.get('/riot/open-champs', async () => {
         const champs = Object.keys((await allGuides()))
         const riotChamps = await getChampions()
         return riotChamps.filter((c) => !champs.includes(c)).sort()

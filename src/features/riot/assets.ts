@@ -16,5 +16,8 @@ export function getRunes() {
 }
 
 export function getStarterItemUrl(item: Starter) {
-    return `https://ddragon.leagueoflegends.com/cdn/13.22.1/img/item/${item == "dblade" ? 1055 : 1054}.png`
+    return `https://ddragon.leagueoflegends.com/cdn/13.22.1/img/item/${{
+        'dblade': 1055,
+        'dshield': 1054
+    }[item]}.png`
 }

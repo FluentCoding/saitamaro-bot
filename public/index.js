@@ -112,14 +112,9 @@ async function renderImage() {
             }))
     }
     const imgContainer = document.getElementById("img-container")
-    imgContainer.innerHTML = ""
-    const imgEl = document.createElement("img")
+    const imgEl = document.getElementsByTagName("img")[0] ?? imgContainer.appendChild(document.createElement("img"))
     imgEl.src = await urlContentToDataUri(`/guide/image/${currentGuideView.guide.name}`)
     imgEl.width = 482
-    imgEl.onload = () => {
-        imgContainer.style.height = `${imgEl.clientHeight}px`
-    }
-    imgContainer.appendChild(imgEl)
 }
 
 async function renderGuide(champion, tab = 'properties', pageTab = 0) {
