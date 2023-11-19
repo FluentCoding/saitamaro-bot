@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify"
 import { allGuides, getGuide, newGuide, removeGuide, setGuide, setGuideVisibility } from "../features/store/guides"
-import { checkToken } from "../middleware/auth"
+import { secureRoutes } from "../middleware/auth"
 import { Champion, getChampions } from "../features/riot/champs"
 import { randomPreview } from "../features/image/cache"
 
 export default function registerGuideRoutes(app: FastifyInstance) {
-    app.addHook('onRequest', checkToken(["/guide/", "/guides"]))
+    secureRoutes(app, "/guide/", "/guides")
     app.get('/guides', async (req, reply) => {
         return Object.keys((await allGuides()))
     })

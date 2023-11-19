@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest, HookHandlerDoneFunction } from "fastify";
 import { accounts } from "../../.env.json"
 
-export function checkToken(authorizedPrefixes: string[]) {
+function checkToken(authorizedPrefixes: string[]) {
     return (req: FastifyRequest, res: FastifyReply, done: HookHandlerDoneFunction) => {
         if (authorizedPrefixes.find(prefix => req.raw.url?.startsWith(prefix))) {
             const token = Buffer.from(req.headers.authorization ?? "", "base64").toString("ascii")
@@ -12,4 +12,8 @@ export function checkToken(authorizedPrefixes: string[]) {
         }
         done()
     }
+}
+
+export function secureRoutes(app: FastifyInstance, ...routes: string[]) {
+    app.addHook('onRequest', checkToken(routes))
 }

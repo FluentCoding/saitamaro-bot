@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify"
 import { allGuides } from "../features/store/guides"
-import { checkToken } from "../middleware/auth"
+import { secureRoutes } from "../middleware/auth"
 import { getChampions } from "../features/riot/champs"
 
 export default function registerRiotRoutes(app: FastifyInstance) {
-    app.addHook('onRequest', checkToken(["/riot/"]))
+    secureRoutes(app, "/riot/")
     app.get('/riot/open-champs', async (req, reply) => {
         const champs = Object.keys((await allGuides()))
         const riotChamps = await getChampions()
