@@ -62,7 +62,7 @@ export default {
     },
     button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champ: string, iss: string }) => {
         if (metadata.iss != interaction.user.id) {
-            await interaction.reply({ content: 'You can only navigate your own guides! Check out `/guides`!', ephemeral: true })
+            await interaction.reply({ content: 'You can only navigate your own guides! Check out `/guide`!', ephemeral: true })
             return
         }
         await interaction.deferUpdate()
