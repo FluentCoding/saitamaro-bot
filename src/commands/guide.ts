@@ -1,9 +1,8 @@
-import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionReplyOptions, SlashCommandBuilder, codeBlock, escapeCodeBlock } from "discord.js";
-import { randomSplashArtUrl } from "../features/riot/champs";
+import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, SlashCommandBuilder, codeBlock } from "discord.js";
 import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
-import { renderPreview } from "../features/image/renderPreview";
 import { feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json"
+import { randomPreview } from "../features/image/cache";
 
 async function guideReply(issuer: string, champion: string, channelId: string, topic?: string) {
     const guideResult = await getGuideCaseInsensitive(champion)
@@ -27,7 +26,7 @@ async function guideReply(issuer: string, champion: string, channelId: string, t
             ...(feedbackChannelUrl ? [new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)] : [])
         )],
         files: [{
-            attachment: await renderPreview(await randomSplashArtUrl(champion), guide.image.runes, guide.image.starter, guide.image.difficulty, guide.image.smallText)
+            attachment: await randomPreview(champion, guide)
         }]
     } as BaseMessageOptions
 }

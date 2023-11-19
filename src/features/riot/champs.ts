@@ -21,13 +21,13 @@ export function splashArtUrl(champion: string, skin?: number) {
     return `${CDN_BASE_URL}/img/champion/splash/${champion}_${skin ?? 0}.jpg`
 }
 
-export async function randomSkin(champion: string) {
-    return getChampions()
+export async function allSkins(neutralChampion: string): Promise<number[]> {
+    return (await getChampion(neutralChampion)).data[neutralChampion].skins.map((skin) => skin.num)
 }
 
 export async function randomSplashArtUrl(champion: string) {
     const neutralChampion = await getNeutralChampionName(champion)
-    const skins = (await getChampion(neutralChampion)).data[neutralChampion].skins
-    const randomSkin: any = skins[Math.floor(Math.random() * skins.length)]
-    return `${CDN_BASE_URL}/img/champion/splash/${neutralChampion}_${randomSkin.num}.jpg`
+    const skins = await allSkins(neutralChampion)
+    const randomSkin = skins[Math.floor(Math.random() * skins.length)]
+    return splashArtUrl(neutralChampion, randomSkin)
 }

@@ -38,7 +38,7 @@ export default function registerGuideRoutes(app: FastifyInstance) {
         const guide = await getGuide(champion)
         if (!guide) return undefined
         reply.type('image/png')
-        reply.send(await renderPreview(await randomSplashArtUrl(champion), guide.image.runes, guide.image.starter, guide.image.difficulty, guide.image.smallText))
+        reply.send(await renderPreview(await randomSplashArtUrl(champion), guide))
     })
     app.post('/guide/save/:champion', async (req) => {
         const { champion } = req.params as { champion: string }

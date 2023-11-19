@@ -3,7 +3,7 @@ import { getRunes, getStarterItemUrl } from '../riot/assets';
 
 const COLOR = '#00ffae';
 
-export async function renderPreview(splashUrl, runes, starterItem, difficulty: number, smallText?: string) {
+export async function renderPreview(splashUrl, guide) {
     const backgroundImage = await loadImage(splashUrl)
     const bottom = backgroundImage.height
     const right = backgroundImage.width
@@ -44,15 +44,15 @@ export async function renderPreview(splashUrl, runes, starterItem, difficulty: n
     }
 
     ctx.drawImage(backgroundImage, 0, 0)
-    if (smallText) {
-        strokeText(48, smallText, 20, 64)
+    if (guide.image.smallText) {
+        strokeText(48, guide.image.smallText, 20, 64)
     }
-    await strokeImage(getStarterItemUrl(starterItem), 20, bottom - 150, 128, 128)
+    await strokeImage(getStarterItemUrl(guide.image.starter), 20, bottom - 150, 128, 128)
     strokeText(64, "STARTER ITEM", 20 + 128 + 25, bottom - 150 + 128 / 2 + 18)
-    await drawRune(runes[0], 20, bottom - 350)
-    await drawRune(runes[1], 20, bottom - 250)
+    await drawRune(guide.image.runes[0], 20, bottom - 350)
+    await drawRune(guide.image.runes[1], 20, bottom - 250)
 
-    ctx.drawImage(await loadImage(`./public/difficulty/${difficulty}.png`), right - 450, bottom - 100)
+    ctx.drawImage(await loadImage(`./public/difficulty/${guide.image.difficulty}.png`), right - 450, bottom - 100)
 
     const pngData = await canvas.encode('webp')
     return pngData

@@ -1,0 +1,1 @@
+export const prefixLog = (prefix) => (msg) => console.log(`[${prefix}] ${msg}`)

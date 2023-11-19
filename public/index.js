@@ -207,11 +207,14 @@ async function saveGuide() {
     if (!currentGuideView) return
     storeGuideValues()
 
+    const saveBtn = document.getElementById("save")
+    saveBtn.setAttribute("disabled", true)
     await fetch(`/guide/save/${currentGuideView.guide.name}`, {
         method: 'POST',
         body: JSON.stringify(currentGuideView.guide)
     })
     await renderImage()
+    saveBtn.removeAttribute("disabled")
     console.log("Saved!")
 }
 

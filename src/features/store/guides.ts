@@ -1,4 +1,5 @@
 import { Config, JsonDB } from "node-json-db"
+import { cacheGuide, removeCache } from "../image/cache"
 
 const db = new JsonDB(new Config("guides", true, false))
 
@@ -37,6 +38,8 @@ export async function newGuide(champion: string) {
 }
 
 export async function setGuide(champion: string, guide: any) {
+    // images first -> text second
+    await cacheGuide(champion, guide)
     await db.push(championPath(champion), guide)
 }
 
@@ -46,4 +49,5 @@ export async function setGuideVisibility(champion: string, visibility: boolean) 
 
 export async function removeGuide(champion: string) {
     await db.delete(championPath(champion))
+    removeCache(champion)
 }
