@@ -3,7 +3,7 @@ import { fetchCachedJson } from '../../util/net'
 
 const CDN_BASE_URL = 'https://ddragon.leagueoflegends.com/cdn'
 
-export type Champion = string & { _: "neutralChampion" };
+export type Champion = string & { _: "champion" };
 export type NeutralChampion = string & { _: "neutralChampion" };
 
 export async function getNeutralChampionName(champion: Champion): Promise<NeutralChampion> {
@@ -16,11 +16,11 @@ export async function getChampions() {
     return Object.values(result.data).map((c: any) => c.name as string)
 }
 
-export async function getChampion(champion: Champion) {
+export async function getChampion(champion: NeutralChampion) {
     return await fetchCachedJson(`${CDN_BASE_URL}/${patch}/data/en_US/champion/${champion}.json`)
 }
 
-export function splashArtUrl(champion: Champion, skin?: number) {
+export function splashArtUrl(champion: NeutralChampion, skin?: number) {
     return `${CDN_BASE_URL}/img/champion/splash/${champion}_${skin ?? 0}.jpg`
 }
 

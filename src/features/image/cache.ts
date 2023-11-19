@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, readSync, readdirSync, rmSync, writeFileSync } from "fs";
-import { Champion, allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
+import { Champion, NeutralChampion, allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
 import { renderPreview } from "./renderPreview";
 import path = require("path");
 import { emptyDirSync } from 'fs-extra';
@@ -24,8 +24,8 @@ export async function randomPreview(champion: Champion, guide: Guide) {
 
 export async function cacheGuide(champion: Champion, guide: Guide) {
     const log = prefixLog(champion)
-    const skins = await allSkins(champion)
     const neutralChampion = await getNeutralChampionName(champion)
+    const skins = await allSkins(neutralChampion)
 
     log(`Caching ${skins.length} skins...`)
     const cache = Object.fromEntries((await Promise.allSettled(skins.map(async (skin) =>
