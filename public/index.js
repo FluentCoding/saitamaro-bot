@@ -228,11 +228,8 @@ async function canCreateGuide() {
 }
 
 async function createGuide() {
-    const res = await fetch(`/guide/new/${document.getElementById("new-champ").value}`)
-    if (res.status == 500) {
-        alert()
-        return
-    }
+    document.getElementById("create-guide-btn").setAttribute("disabled", true)
+    await fetch(`/guide/new/${document.getElementById("new-champ").value}`)
     await guides()
     closeModal()
 }

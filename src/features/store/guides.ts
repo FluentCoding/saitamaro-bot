@@ -28,7 +28,8 @@ export async function newGuide(champion: string) {
         image: {
             runes: ["SHIELD BASH", "BONE PLATING"],
             starter: "dblade",
-            difficulty: 3
+            difficulty: 3,
+            smallText: ''
         },
         contents: {
             "General": ""
@@ -39,7 +40,11 @@ export async function newGuide(champion: string) {
 
 export async function setGuide(champion: string, guide: any) {
     // images first -> text second
-    await cacheGuide(champion, guide)
+    const existingGuide = await getGuide(champion)
+    // if there hasn't been a guide or the image has changed, cache images
+    if (!existingGuide || JSON.stringify(guide.image) != JSON.stringify(existingGuide.image)) {
+        await cacheGuide(champion, guide)
+    }
     await db.push(championPath(champion), guide)
 }
 
