@@ -31,7 +31,6 @@ export default function registerGuideRoutes(app: FastifyInstance) {
         const { champion } = req.params as { champion: Champion }
         await removeGuide(champion)
         console.log(champion, "guide removed.")
-        return {}
     })
     app.get('/guide/image/:champion', async (req, reply) => {
         const { champion } = req.params as { champion: Champion }
