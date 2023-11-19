@@ -13,13 +13,13 @@ client.once(Events.ClientReady, c => {
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isAutocomplete()) {
         const command = commands[interaction.commandName]
-        await command.autocomplete(interaction)
+        await command.autocomplete?.(interaction)
         return;
     }
     if (interaction.isButton()) {
         const metadata = JSON.parse(interaction.customId)
         const command = commands[metadata.command]
-        await command.button(interaction, metadata)
+        await command.button?.(interaction, metadata)
         return;
     }
 	if (!interaction.isChatInputCommand()) return;

@@ -5,6 +5,6 @@ export interface ButtonMetadata {
     action: string
 }
 
-export function createButton<T extends ButtonMetadata>(label, metadata: T, style = ButtonStyle.Primary) {
+export function createButton<T extends ButtonMetadata>(label: string, metadata: T, style = ButtonStyle.Primary) {
     return new ButtonBuilder().setCustomId(JSON.stringify(metadata)).setLabel(label).setStyle(style)
 }

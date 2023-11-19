@@ -1,15 +1,16 @@
 import { existsSync, mkdirSync, readFileSync, readSync, readdirSync, rmSync, writeFileSync } from "fs";
-import { allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
+import { Champion, allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
 import { renderPreview } from "./renderPreview";
 import path = require("path");
 import { emptyDirSync } from 'fs-extra';
 import { prefixLog } from "../../util/log";
+import { Guide } from "../store/guides";
 
-function championDir(champion) {
+function championDir(champion: Champion) {
     return path.join(process.cwd(), `_cache/${champion}`)
 }
 
-export async function randomPreview(champion: string, guide) {
+export async function randomPreview(champion: Champion, guide: Guide) {
     const dir = championDir(champion)
     if (existsSync(dir)) {
         const files = readdirSync(dir)
@@ -21,7 +22,7 @@ export async function randomPreview(champion: string, guide) {
     }
 }
 
-export async function cacheGuide(champion, guide) {
+export async function cacheGuide(champion: Champion, guide: Guide) {
     const log = prefixLog(champion)
     const skins = await allSkins(champion)
     const neutralChampion = await getNeutralChampionName(champion)
@@ -47,6 +48,6 @@ export async function cacheGuide(champion, guide) {
     log("Caching done")
 }
 
-export function removeCache(champion: string) {
+export function removeCache(champion: Champion) {
     rmSync(championDir(champion), { recursive: true, force: true })
 }

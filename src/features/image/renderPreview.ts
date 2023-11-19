@@ -1,9 +1,10 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas'
 import { getRunes, getStarterItemUrl } from '../riot/assets';
+import { Guide, Rune } from '../store/guides';
 
 const COLOR = '#00ffae';
 
-export async function renderPreview(splashUrl, guide) {
+export async function renderPreview(splashUrl: string, guide: Guide) {
     const backgroundImage = await loadImage(splashUrl)
     const bottom = backgroundImage.height
     const right = backgroundImage.width
@@ -13,13 +14,13 @@ export async function renderPreview(splashUrl, guide) {
 
     ctx.fillStyle = COLOR
 
-    async function drawRune(rune, x, y) {
+    async function drawRune(rune: Rune, x: number, y: number) {
         roundStroke(x, y, 80, 80)
         ctx.drawImage(await loadImage(getRunes()[rune]), x, y, 80, 80)
         strokeText(48, rune, x + 100, y + 56)
     }
 
-    function roundStroke(x, y, w, h) {
+    function roundStroke(x: number, y: number, w: number, h: number) {
         ctx.strokeStyle = COLOR
         ctx.beginPath()
         ctx.arc(x + w/2, y + h/ 2, w / 2, 0, 2 * Math.PI)
@@ -27,7 +28,7 @@ export async function renderPreview(splashUrl, guide) {
         ctx.stroke()
     }
 
-    async function strokeImage(url, x, y, w, h) {
+    async function strokeImage(url: string, x: number, y: number, w: number, h: number) {
         const img = await loadImage(url)
         ctx.drawImage(img, x, y, w, h)
         ctx.lineWidth = 6
@@ -35,7 +36,7 @@ export async function renderPreview(splashUrl, guide) {
         ctx.strokeRect(x, y, w, h)
     }
 
-    async function strokeText(size, text, x, y) {
+    async function strokeText(size: number, text: string, x: number, y: number) {
         ctx.font = `${size}px Arial`
         ctx.strokeStyle = '#000000'
         ctx.lineWidth = 6

@@ -3,12 +3,13 @@ import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
 import { feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json"
 import { randomPreview } from "../features/image/cache";
+import { Champion } from "../features/riot/champs";
 
-async function guideReply(issuer: string, champion: string, channelId: string, topic?: string) {
-    const guideResult = await getGuideCaseInsensitive(champion)
+async function guideReply(issuer: string, championSearchQuery: string, channelId: string, topic?: string) {
+    const guideResult = await getGuideCaseInsensitive(championSearchQuery)
     if (!guideResult || (channelId != unrestrictedChannelId && !guideResult.guide.public)) return undefined
     const guide = guideResult.guide
-    champion = guideResult.name
+    const champion = guideResult.name as Champion
     
     const topics = Object.keys(guide.contents)
     // in case we removed/renamed the topic after the initial message has been sent
@@ -40,7 +41,7 @@ export default {
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         await interaction.deferReply()
-        const champion = interaction.options.getString("champion")
+        const champion = interaction.options.getString("champion", true)
         const reply = await guideReply(interaction.user.id, champion, interaction.channelId)
         if (reply) {
             await interaction.editReply(reply)
@@ -50,7 +51,7 @@ export default {
     },
     autocomplete: async (interaction: AutocompleteInteraction) => {
         const guides = await allGuides()
-        const champions = Object.keys(guides)
+        const champions = Object.keys(guides) as Champion[]
         const searchQuery = interaction.options.getFocused().toLowerCase()
         let searchResult = champions.filter((c) => c.toLowerCase().startsWith(searchQuery))
         if (interaction.channelId != unrestrictedChannelId) searchResult = searchResult.filter((c) => guides[c].public)

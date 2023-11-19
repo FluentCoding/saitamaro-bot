@@ -6,7 +6,7 @@ export interface Command {
     metadata: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">,
     execute: (interaction: ChatInputCommandInteraction) => Promise<void>,
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>,
-    button?: (interaction: ButtonInteraction, metadata: ButtonMetadata) => Promise<void>
+    button?: <T extends ButtonMetadata>(interaction: ButtonInteraction, metadata: T) => Promise<void>
 }
 
 export default {

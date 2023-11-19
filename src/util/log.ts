@@ -1,1 +1,1 @@
-export const prefixLog = (prefix) => (msg) => console.log(`[${prefix}] ${msg}`)
+export const prefixLog = (prefix: string) => (msg: string) => console.log(`[${prefix}] ${msg}`)

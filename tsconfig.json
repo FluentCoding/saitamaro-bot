@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "strict": true,
+        "lib": ["ES2021.String"]
     },
     "exclude": [
         "node_modules"

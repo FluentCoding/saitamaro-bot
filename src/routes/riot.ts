@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify"
-import { allGuides, getGuide, newGuide, removeGuide, setGuide } from "../features/store/guides"
+import { allGuides } from "../features/store/guides"
 import { checkToken } from "../middleware/auth"
 import { getChampions } from "../features/riot/champs"
 
