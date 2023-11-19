@@ -3,6 +3,8 @@ import { fetchCachedJson } from '../../util/net'
 
 const CDN_BASE_URL = 'https://ddragon.leagueoflegends.com/cdn'
 
+// Champion is the human readable name, e.g. Wukong
+// NeutralChampion is the internal name used by riot, e.g. MonkeyKing
 export type Champion = string & { _: "champion" };
 export type NeutralChampion = string & { _: "neutralChampion" };
 
