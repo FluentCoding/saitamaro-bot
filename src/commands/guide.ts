@@ -59,7 +59,7 @@ export default {
             await interaction.respond([])
             return
         }
-        await interaction.respond(searchResult.map((c) => ({name: c, value: c})))
+        await interaction.respond(searchResult.sort().map((c) => ({name: c, value: c})))
     },
     button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champ: string, iss: string }) => {
         if (metadata.iss != interaction.user.id) {
