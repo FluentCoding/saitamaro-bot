@@ -5,10 +5,12 @@ import fastify = require('fastify');
 import path = require('path');
 import registerGuideRoutes from './routes/guide';
 import registerRiotRoutes from './routes/riot';
+import { runLeaderboardUpdater } from './commands/leaderboard';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.once(Events.ClientReady, c => {
 	console.log(`Ready! Logged in as ${c.user.tag}`);
+	runLeaderboardUpdater(c, true)
 });
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isAutocomplete()) {
@@ -22,6 +24,11 @@ client.on(Events.InteractionCreate, async interaction => {
         await command.button?.(interaction, metadata)
         return;
     }
+	if (interaction.isModalSubmit()) {
+        const command = commands[interaction.customId]
+        await command.modalSubmit?.(interaction)
+        return;
+	}
 	if (!interaction.isChatInputCommand()) return;
 
     const command = commands[interaction.commandName]

@@ -1,4 +1,4 @@
-import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, SlashCommandBuilder, codeBlock } from "discord.js";
+import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageActionRowComponent, MessageActionRowComponentBuilder, SlashCommandBuilder, codeBlock } from "discord.js";
 import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
 import { feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json"
@@ -17,7 +17,7 @@ async function guideReply(issuer: string, championSearchQuery: string, channelId
     const content = guide.contents[actualTopic]
     return {
         content: codeBlock(content.replaceAll("`", "`​").substring(0, 2000 - 6 - 2)), // 6 = triple quote, 2 double newline
-        components: [new ActionRowBuilder().addComponents(
+        components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
             ...topics.map((topic) => createButton(topic, {
                 command: "guide",
                 action: topic,
@@ -29,7 +29,7 @@ async function guideReply(issuer: string, championSearchQuery: string, channelId
         files: [{
             attachment: await randomPreview(champion, guide)
         }]
-    } as BaseMessageOptions
+    }
 }
 
 export default {
