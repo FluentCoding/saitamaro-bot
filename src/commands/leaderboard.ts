@@ -116,6 +116,7 @@ export default {
         }
     },
     modalSubmit: async (interaction: ModalSubmitInteraction) => {
+        await interaction.deferReply({ ephemeral: true })
         try {
             const discordId = interaction.user.id
             const leaderboardEntry = await getLeaderboardEntry(discordId)
@@ -126,34 +127,35 @@ export default {
                 if (leaderboardEntry) {
                     await removeLeaderboardEntry(discordId)
                     await updateLeaderboardMessage(interaction.client)
-                    await interaction.reply({ content: "You have been removed from the leaderboards!", ephemeral: true })
+                    await interaction.editReply({ content: "You have been removed from the leaderboards!"})
                 } else {
-                    await interaction.reply({ content: "No action has been executed.", ephemeral: true })
+                    await interaction.editReply({ content: "No action has been executed."})
                 }
                 return
             }
 
             const region = regionFromStr(server)
             if (!region) {
-                await interaction.reply({ content: "Invalid region input!", ephemeral: true })
+                await interaction.editReply({ content: "Invalid region input!"})
                 return
             }
 
             const summonerId = await getSummonerID(region, summonerName)
             if (!summonerId) {
-                await interaction.reply({ content: `This summoner doesn't exist in region ${server.toUpperCase()}!`, ephemeral: true })
+                await interaction.editReply({ content: `This summoner doesn't exist in region ${server.toUpperCase()}!`})
                 return
             }
 
             await addLeaderboardEntry(discordId, { region: server, id: summonerId })
             if (leaderboardEntry) {
-                await interaction.reply({ content: "Your leaderboard connection has been updated!", ephemeral: true })
+                await interaction.editReply({ content: "Your leaderboard connection has been updated!"})
             } else {
-                await interaction.reply({ content: "You have been added to the leaderboards!", ephemeral: true })
+                await interaction.editReply({ content: "You have been added to the leaderboards!"})
             }
             await updateLeaderboardMessage(interaction.client)
         } catch(e) {
             console.log("Failed to handle modal submit", e)
+            await interaction.editReply({ content: "Failed to handle modal submit" })
         }
     }
 }
