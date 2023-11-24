@@ -1,4 +1,6 @@
-const ranks: Record<string, { value: number, tag: string }> = {
+import { LolRank } from "../features/riot/leaderboard"
+
+const tiers: Record<string, { value: number, tag: string }> = {
     'Challenger': { value: 9, tag: "<:lolrankchallenger:1176986263878893699>" },
     'Grandmaster': { value: 8, tag: "<:lolrankgrandmaster:1176986266181582921>" },
     'Master': { value: 7, tag: "<:lolrankmaster:1176986267720896512>" },
@@ -18,11 +20,12 @@ const divs: Record<string, number> = {
     'IV': 0,
 }
 
-export const sortRank = (a: string, b: string) => {
-    const [aTier, aRank] = a.split(" "), [bTier, bRank] = b.split(" ")
-
-    if (aTier == bTier) return divs[bRank] - divs[aRank]
-    return ranks[bTier].value - ranks[aTier].value
+export const sortRank = (a: LolRank, b: LolRank) => {
+    if (a.tier == b.tier) {
+        if (a.rank == b.rank) return b.lp - a.lp
+        return divs[b.rank] - divs[a.rank]
+    }
+    return tiers[b.tier].value - tiers[a.tier].value
 }
 
 // 1-indexed
@@ -34,7 +37,6 @@ export const withPlacePrefix = (place: number, suffix: string) => {
     }[place] ?? `  ${place}.`} ${suffix}`
 }
 
-export const withRankEmoji = (rank: string) => {
-    const [tier] = rank.split(" ")
-    return `${ranks[tier].tag}${rank}`
+export const withRankEmoji = (rank: LolRank) => {
+    return `${tiers[rank.tier].tag}${rank.tier} ${rank.rank} (${rank.lp} LP)`
 }

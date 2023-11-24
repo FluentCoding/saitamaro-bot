@@ -2,7 +2,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, ButtonInteraction, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, BaseMessageOptions, TextInputBuilder, TextInputStyle, ModalBuilder, ModalSubmitInteraction, Colors, Client, InteractionResponse, MessagePayload, Message, WebhookMessageEditOptions, TextChannel, ModalActionRowComponentBuilder, ComponentBuilder, MessageActionRowComponentBuilder } from "discord.js";
 import { ButtonMetadata, createButton } from "../util/discord";
 import { addLeaderboardEntry, getLeaderboard, getLeaderboardEntry, getLeaderboardMessageLocation, removeLeaderboardEntry, setLeaderboardMessageLocation } from "../features/store/leaderboard";
-import { getSoloDuoRank, getSummonerID, getSummonerNickname, regionFromStr } from "../features/riot/leaderboard";
+import { LolRank, getSoloDuoRank, getSummonerID, getSummonerNickname, regionFromStr } from "../features/riot/leaderboard";
 import { withRankEmoji, sortRank, withPlacePrefix } from "../util/rank";
 import timestring = require("timestring");
 
@@ -42,7 +42,7 @@ async function renderLeaderboard(client: Client<true>) {
             (await Promise.all(Object.entries(await getLeaderboard()).map(async ([discordId, entry]) => {
                 return [ (await client.users.fetch(discordId).catch(_ => undefined))?.displayName, await getSoloDuoRank(regionFromStr(entry.region)!, entry.id) ]
             })))
-            .filter(([name, entry]) => name != undefined && entry != undefined) as [ string, string ][]
+            .filter(([name, entry]) => name != undefined && entry != undefined) as [ string, LolRank ][]
         )
         .sort((a, b) => sortRank(a[1], b[1]))
         .slice(0, LIMIT)
