@@ -25,11 +25,16 @@ export async function runLeaderboardUpdater(client: Client<true>, runImmediately
     };
 }
 async function updateLeaderboardMessage(client: Client<true>) {
-    console.log("Triggering leaderboard update!")
-    const messageLocation = await getLeaderboardMessageLocation()
-    if (!messageLocation) return
-    return ((await client.channels.fetch(messageLocation.channelId)) as TextChannel | null)?.messages.edit(messageLocation.messageId, await renderLeaderboard(client))
-        .catch((e) => console.log("Failed to update leaderboard message", e));
+    try {
+        console.log("Triggering leaderboard update!")
+        const messageLocation = await getLeaderboardMessageLocation()
+        if (!messageLocation) return
+
+        const channel = await client.channels.fetch(messageLocation.channelId) as TextChannel | null
+        await channel?.messages.edit(messageLocation.messageId, await renderLeaderboard(client))
+    } catch(e) {
+        console.log("Failed to update leaderboard message", e)
+    }
 }
 async function renderLeaderboard(client: Client<true>) {
     const leaderboard = 
@@ -80,7 +85,7 @@ export default {
             console.log("Failed to create leaderboard message", e)
         }
     },
-    button: async (interaction: ButtonInteraction, metadata: ButtonMetadata) => {
+    button: async (interaction: ButtonInteraction, _: ButtonMetadata) => {
         try {
             const modal = new ModalBuilder()
                 .setCustomId('leaderboard')
