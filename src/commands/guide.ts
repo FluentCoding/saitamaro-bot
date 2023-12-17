@@ -50,16 +50,20 @@ export default {
         }
     },
     autocomplete: async (interaction: AutocompleteInteraction) => {
-        const guides = await allGuides()
-        const champions = Object.keys(guides) as Champion[]
-        const searchQuery = interaction.options.getFocused().toLowerCase()
-        let searchResult = champions.filter((c) => c.toLowerCase().startsWith(searchQuery))
-        if (interaction.channelId != unrestrictedChannelId) searchResult = searchResult.filter((c) => guides[c].public)
-        if (searchResult.length > 25) {
-            await interaction.respond([])
-            return
+        try {
+            const guides = await allGuides()
+            const champions = Object.keys(guides) as Champion[]
+            const searchQuery = interaction.options.getFocused().toLowerCase()
+            let searchResult = champions.filter((c) => c.toLowerCase().startsWith(searchQuery))
+            if (interaction.channelId != unrestrictedChannelId) searchResult = searchResult.filter((c) => guides[c].public)
+            if (searchResult.length > 25) {
+                await interaction.respond([])
+                return
+            }
+            await interaction.respond(searchResult.sort().map((c) => ({name: c, value: c})))
+        } catch(e) {
+            console.log("Failed to autocomplete guides", e)
         }
-        await interaction.respond(searchResult.sort().map((c) => ({name: c, value: c})))
     },
     button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champ: string, iss: string }) => {
         if (metadata.iss != interaction.user.id) {
