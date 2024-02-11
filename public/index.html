@@ -37,8 +37,10 @@
 
     <script id="guide-option-template" type="text/x-handlebars-template">
         <div class="field-row">
-            <input name="guides" id="guide{{index}}" type="radio" onclick="renderGuide('{{escape guide}}')">
-            <label for="guide{{index}}">{{guide}}</label>
+            <input name="guides" id="guide{{index}}" type="radio" onclick="renderGuide('{{escape guide.name}}')">
+            <label style="width: 100%" for="guide{{index}}">{{guide.name}} <b style="float: right">
+                ({{#if guide.public}}PUBLIC{{else}}PRIVATE{{/if}}) [SZN <span style="color: tomato">{{guide.season}}</span>]
+            </b></label>
         </div>
     </script>
 
@@ -90,7 +92,7 @@
                 </div>
                 <div class="window" style="margin:0;margin-left:20px;margin-bottom:20px" id="guide-content">
                     <div class="title-bar">
-                        <h1 class="title">Preview:</h1>
+                        <h1 class="title">Preview</h1>
                     </div>
                     <div id="img-container" style="width:482px;height:284px">
                     </div>
@@ -153,7 +155,7 @@
             <div class="separator"></div>
             <div class="modeless-dialog">
                 <div id="guides" style="justify-content: flex-start"></div>
-                <section class="field-row" style="justify-content: flex-end">
+                <section class="field-row" style="justify-content: flex-end; margin-top: 10px">
                     <button class="btn" onclick="newGuide()">New guide</button>
                 </section>
             </div>

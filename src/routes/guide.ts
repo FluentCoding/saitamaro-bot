@@ -3,11 +3,12 @@ import { allGuides, getGuide, newGuide, removeGuide, setGuide, setGuideVisibilit
 import { secureRoutes } from "../middleware/auth"
 import { Champion, getChampions } from "../features/riot/champs"
 import { randomPreview } from "../features/image/cache"
+import { defaultSeason } from "../../.env.json"
 
 export default function registerGuideRoutes(app: FastifyInstance) {
     secureRoutes(app, "/guide/", "/guides")
     app.get('/guides', async () => {
-        return Object.keys(await allGuides())
+        return Object.entries(await allGuides()).map(([k, v]) => ({ name: k, season: v.season ?? defaultSeason, public: v.public }))
     })
     app.get('/guide/:champion', async (req) => {
         const { champion } = req.params as { champion: Champion }

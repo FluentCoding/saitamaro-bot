@@ -18,7 +18,7 @@ async function guides() {
     const guides = await (await fetch("/guides")).json()
     guidesDiv.innerHTML = guides.reduce((a, v, i) => a + templates['guide-option-template']({ index: i, guide: v }), "")
     if (currentGuideView) {
-        document.getElementById(`guide${guides.findIndex((g) => g == currentGuideView.guide.name)}`).checked = true
+        document.getElementById(`guide${guides.findIndex((g) => g.name == currentGuideView.guide.name)}`).checked = true
     }
 }
 
@@ -208,6 +208,7 @@ async function toggleVisibility() {
         body: JSON.stringify({ public: currentGuideView.guide.public })
     })
     renderVisibility()
+    await guides()
 }
 
 async function removeGuide() {
@@ -228,6 +229,7 @@ async function saveGuide() {
         body: JSON.stringify(currentGuideView.guide)
     })
     await renderImage()
+    await guides()
     saveBtn.removeAttribute("disabled")
     console.log("Saved!")
 }

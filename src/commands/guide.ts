@@ -1,11 +1,11 @@
-import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageActionRowComponent, MessageActionRowComponentBuilder, SlashCommandBuilder, codeBlock } from "discord.js";
+import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, InteractionEditReplyOptions, MessageActionRowComponent, MessageActionRowComponentBuilder, MessagePayload, SlashCommandBuilder, codeBlock } from "discord.js";
 import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
 import { ButtonMetadata, createButton } from "../util/discord";
-import { feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json"
+import { feedbackChannelUrl, unrestrictedChannelId, currentSeason, defaultSeason } from "../../.env.json"
 import { randomPreview } from "../features/image/cache";
 import { Champion } from "../features/riot/champs";
 
-async function guideReply(issuer: string, championSearchQuery: string, channelId: string, topic?: string) {
+async function guideReply(issuer: string, championSearchQuery: string, channelId: string, topic?: string): Promise<InteractionEditReplyOptions | undefined> {
     const guideResult = await getGuideCaseInsensitive(championSearchQuery)
     if (!guideResult || (channelId != unrestrictedChannelId && !guideResult.guide.public)) return undefined
     const guide = guideResult.guide
@@ -26,6 +26,12 @@ async function guideReply(issuer: string, championSearchQuery: string, channelId
             }, topic == actualTopic ? ButtonStyle.Success : ButtonStyle.Primary)),
             ...(feedbackChannelUrl ? [new ButtonBuilder().setLabel("Feedback").setURL(feedbackChannelUrl).setStyle(ButtonStyle.Link)] : [])
         )],
+        embeds: guide.season != currentSeason ? [
+            new EmbedBuilder()
+                .setColor(Colors.Red)
+                .setTitle("Warning")
+                .setDescription(`This guide has been made for season ${guide.season ?? defaultSeason} and might contain outdated information`)
+        ] : undefined,
         files: [{
             attachment: await randomPreview(champion, guide)
         }]
