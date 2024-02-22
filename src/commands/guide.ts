@@ -43,7 +43,7 @@ export default {
         .setName("guide")
         .setDescription("Matchup guide against specific champion")
         .addStringOption(option =>
-           option.setName("champion").setDescription("Yone vs. x").setRequired(true).setAutocomplete(true)
+           option.setName("champion").setDescription("Yone vs. x (Type the first letters of the champ to see autocomplete suggestions)").setRequired(true).setAutocomplete(true)
         ),
     execute: async (interaction: ChatInputCommandInteraction) => {
         await interaction.deferReply()
