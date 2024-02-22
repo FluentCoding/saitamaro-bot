@@ -62,8 +62,8 @@ async function renderLeaderboard(client: Client<true>) {
         ],
         components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
             createButton("Your connection", {
-                command: "leaderboard",
-                action: "config"
+                cmd: "leaderboard",
+                tag: "config"
             })
         )]
     }

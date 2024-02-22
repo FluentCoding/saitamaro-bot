@@ -19,8 +19,8 @@ async function guideReply(issuer: string, championSearchQuery: string, channelId
         content: codeBlock(content.replaceAll("`", "`​").substring(0, 2000 - 6 - 2)), // 6 = triple quote, 2 double newline
         components: [new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
             ...topics.map((topic) => createButton(topic, {
-                command: "guide",
-                action: topic,
+                cmd: "guide",
+                tag: topic,
                 iss: issuer,
                 champ: champion,
             }, topic == actualTopic ? ButtonStyle.Success : ButtonStyle.Primary)),
@@ -77,7 +77,7 @@ export default {
             return
         }
         await interaction.deferUpdate()
-        const reply = await guideReply(metadata.iss, metadata.champ, interaction.channelId, metadata.action)
+        const reply = await guideReply(metadata.iss, metadata.champ, interaction.channelId, metadata.tag)
         if (reply) {
             await interaction.editReply(reply)
         } else {

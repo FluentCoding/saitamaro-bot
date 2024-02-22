@@ -6,6 +6,7 @@ import path = require('path');
 import registerGuideRoutes from './routes/guide';
 import registerRiotRoutes from './routes/riot';
 import { runLeaderboardUpdater } from './commands/leaderboard';
+import { ButtonMetadata } from './util/discord';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.once(Events.ClientReady, c => {
@@ -19,8 +20,8 @@ client.on(Events.InteractionCreate, async interaction => {
         return;
     }
     if (interaction.isButton()) {
-        const metadata = JSON.parse(interaction.customId)
-        const command = commands[metadata.command]
+        const metadata: ButtonMetadata = JSON.parse(interaction.customId)
+        const command = commands[metadata.cmd]
         await command.button?.(interaction, metadata)
         return;
     }

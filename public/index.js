@@ -66,8 +66,8 @@ function renamePage() {
     const newPage = prompt("Enter new page name")?.replace(/[^\x00-\x7F]/g, "").substring(0, 40)
     if (newPage === undefined) return
 
-    if (newPage.length < 3) {
-        alert("Too short! 3 characters or more.")
+    if (newPage.length < 3 || newPage.length > 25) {
+        alert("The new name is only allowed to be 3-25 characters long.")
         return
     }
     if (currentGuideView.guide.contents[newPage] !== undefined) {
