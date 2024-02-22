@@ -228,7 +228,7 @@ async function saveGuide() {
         method: 'POST',
         body: JSON.stringify(currentGuideView.guide)
     })
-    await renderImage()
+    currentGuideView.isPropertiesTab && await renderImage()
     await guides()
     saveBtn.removeAttribute("disabled")
     console.log("Saved!")
