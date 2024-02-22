@@ -1,6 +1,7 @@
 import { AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, ModalSubmitInteraction, SlashCommandBuilder } from "discord.js";
 import guide from "./commands/guide";
 import leaderboard from "./commands/leaderboard";
+import progress from "./commands/progress";
 import { ButtonMetadata } from "./util/discord";
 
 export interface Command {
@@ -13,5 +14,6 @@ export interface Command {
 
 export default {
     guide,
-    leaderboard
+    leaderboard,
+    progress
 } as Record<string, Command>
