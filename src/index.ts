@@ -16,18 +16,18 @@ client.once(Events.ClientReady, c => {
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isAutocomplete()) {
         const command = commands[interaction.commandName]
-        await command.autocomplete?.(interaction)
+        command && await command.autocomplete?.(interaction)
         return;
     }
     if (interaction.isButton()) {
         const metadata: ButtonMetadata = JSON.parse(interaction.customId)
         const command = commands[metadata.cmd]
-        await command.button?.(interaction, metadata)
+		command && await command.button?.(interaction, metadata)
         return;
     }
 	if (interaction.isModalSubmit()) {
         const command = commands[interaction.customId]
-        await command.modalSubmit?.(interaction)
+        command && await command.modalSubmit?.(interaction)
         return;
 	}
 	if (!interaction.isChatInputCommand()) return;
