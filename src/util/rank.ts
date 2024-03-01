@@ -11,6 +11,7 @@ const tiers: Record<string, { value: number, tag: string }> = {
     'Silver': { value: 2, tag: "<:lolranksilver:1176986310599249938>" },
     'Bronze': { value: 1, tag: "<:lolrankbronze:1176986312151146647>" },
     'Iron': { value: 0, tag: "<:lolrankiron:1176986198653292654>" },
+    'error': { value: -1, tag: "" }
 }
 
 const divs: Record<string, number> = {
@@ -38,5 +39,7 @@ export const withPlacePrefix = (place: number, suffix: string) => {
 }
 
 export const withRankEmoji = (rank: LolRank) => {
+    if (rank.lp == -1)
+        return `Riot communication error (? LP)`
     return `${tiers[rank.tier].tag}${rank.tier} ${rank.rank} (${rank.lp} LP)`
 }

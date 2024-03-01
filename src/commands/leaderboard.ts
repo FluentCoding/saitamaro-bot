@@ -42,7 +42,7 @@ async function renderLeaderboard(client: Client<true>) {
             (await Promise.all(Object.entries(await getLeaderboard()).map(async ([discordId, entry]) => {
                 return [ (await client.users.fetch(discordId).catch(_ => undefined))?.displayName, await getSoloDuoRank(regionFromStr(entry.region)!, entry.id) ]
             })))
-            .filter(([name, entry]) => name != undefined && entry != undefined) as [ string, LolRank ][]
+            .filter(([name, entry]) => name != undefined) as [ string, LolRank ][]
         )
         .sort((a, b) => sortRank(a[1], b[1]))
         .slice(0, LIMIT)
