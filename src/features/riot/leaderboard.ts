@@ -12,7 +12,7 @@ export async function getSoloDuoRank(region: LoLRegion, summonerId: string): Pro
             region,
             summonerId
         })).filter((v) => v.queueType == 'RANKED_SOLO_5x5')
-        if (summoners.length != 1) throw Error()
+        if (summoners.length != 1) return { tier: `Unranked`, rank: '', lp: 0 }
         const summoner = summoners[0]
         return { tier: `${summoner.tier[0]}${summoner.tier.slice(1).toLowerCase()}`, rank: summoner.rank, lp: summoner.leaguePoints }
     } catch(e) {
