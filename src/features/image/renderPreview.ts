@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas'
-import { getRunes, getStarterItemUrl } from '../riot/assets';
+import { getRunes, getStarterItemUrl, getSummonerUrl } from '../riot/assets';
 import { Guide, Rune } from '../store/guides';
 
 const COLOR = '#00ffae';
@@ -18,6 +18,16 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
         roundStroke(x, y, 80, 80)
         ctx.drawImage(await loadImage(getRunes()[rune]), x, y, 80, 80)
         strokeText(48, rune, x + 100, y + 56)
+    }
+
+    async function drawSummoner(summoner: string, x: number, y: number, w: number, h: number) {
+        try {
+            await strokeImage(getSummonerUrl(summoner), x, y, w, h)
+            return true;
+        } catch(e) {
+            console.log("Couldn't load summoner", summoner)
+            return false;
+        }
     }
 
     function roundStroke(x: number, y: number, w: number, h: number) {
@@ -52,6 +62,16 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
     strokeText(64, "STARTER ITEM", 20 + 128 + 25, bottom - 150 + 128 / 2 + 18)
     await drawRune(guide.image.runes[0], 20, bottom - 350)
     await drawRune(guide.image.runes[1], 20, bottom - 250)
+
+    {
+        const sums = guide.image.sums?.split(',').map((sum) => sum.toLowerCase().trim()).filter(sum => sum != '').reverse() ?? []
+        let sumX = 0
+        const size = 100, distance = size + 20
+        for (const sum of sums) {
+            if (await drawSummoner(sum, right - 120 + sumX, bottom - 220, size, size))
+                sumX -= distance
+        }
+    }
 
     ctx.drawImage(await loadImage(`./public/difficulty/${guide.image.difficulty}.png`), right - 450, bottom - 100)
 

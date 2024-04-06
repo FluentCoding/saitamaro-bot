@@ -10,6 +10,7 @@ export type Difficulty = 1 | 2 | 3 | 4 | 5
 export interface Guide {
     image: {
         runes: [Rune, Rune],
+        sums?: string,
         starter: Starter,
         difficulty: Difficulty,
         smallText: string
@@ -45,6 +46,7 @@ export async function newGuide(champion: Champion) {
     await setGuide(champion, {
         image: {
             runes: ["SHIELD BASH", "BONE PLATING"],
+            sums: '',
             starter: "dblade",
             difficulty: 3,
             smallText: ''

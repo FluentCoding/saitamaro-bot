@@ -170,6 +170,7 @@ function storeGuideValues() {
         currentGuideView.guide.image.starter = starterOptions[starterOptions.selectedIndex].id
         currentGuideView.guide.image.difficulty = document.getElementById("difficulty").selectedIndex + 1
         currentGuideView.guide.image.smallText = document.getElementById("optional_text").value
+        currentGuideView.guide.image.sums = document.getElementById("sums").value
         currentGuideView.guide.image.runes = [...document.querySelectorAll('.rune.active')].map((e) => e.id)
     } else {
         currentGuideView.guide.contents[Object.keys(currentGuideView.guide.contents)[currentGuideView.pageTab]] = document.getElementById("page-text").value
