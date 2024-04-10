@@ -1,8 +1,7 @@
-let authToken = "";
 window.fetch = new Proxy(window.fetch, {
   apply: function (target, that, args) {
     if (!args[1]) args[1] = {};
-    args[1].headers = { authorization: authToken };
+    args[1].headers = { authorization: localStorage.getItem("authToken") };
     let temp = target.apply(that, args);
     return temp.then((res) => {
       if (res.status === 401) {
@@ -10,6 +9,7 @@ window.fetch = new Proxy(window.fetch, {
           "Enter username and password! Format => user:password"
         );
         authToken = btoa(token);
+        localStorage.setItem("authToken", btoa(token));
         return fetch(...args);
       } else {
         return res;

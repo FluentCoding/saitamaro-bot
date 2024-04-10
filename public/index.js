@@ -11,6 +11,24 @@ Handlebars.registerHelper("escape", function (variable) {
   return variable.replace(/(['"])/g, "\\$1");
 });
 
+function applyDarkMode() {
+  const isDarkMode = localStorage.getItem("darkMode") == 1;
+  if (!isDarkMode) {
+    document.adoptedStyleSheets = [];
+    return;
+  }
+
+  const stylesheet = new CSSStyleSheet();
+  stylesheet.replaceSync("html, img, video, iframe { filter: invert(1) }");
+  document.adoptedStyleSheets = [stylesheet];
+}
+function toggleDarkMode() {
+  localStorage.setItem("darkMode", 1 - (localStorage.getItem("darkMode") ?? 0));
+  applyDarkMode();
+}
+
+applyDarkMode();
+
 const guidesDiv = document.getElementById("guides");
 const guideContentDiv = document.getElementById("guide-content");
 let currentGuideView = undefined;

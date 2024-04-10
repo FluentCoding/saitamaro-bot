@@ -248,19 +248,32 @@
       "
     ></div>
     <div class="rowLayout">
-      <div class="window" style="width: 30rem">
-        <div class="title-bar">
-          <h1 class="title">Guides</h1>
+      <div>
+        <div class="window" style="width: 30rem">
+          <div class="title-bar">
+            <h1 class="title">Guides</h1>
+          </div>
+          <div class="separator"></div>
+          <div class="modeless-dialog">
+            <div id="guides" style="justify-content: flex-start"></div>
+            <section
+              class="field-row"
+              style="justify-content: flex-end; margin-top: 10px"
+            >
+              <button class="btn" onclick="newGuide()">New guide</button>
+            </section>
+          </div>
         </div>
-        <div class="separator"></div>
-        <div class="modeless-dialog">
-          <div id="guides" style="justify-content: flex-start"></div>
-          <section
-            class="field-row"
-            style="justify-content: flex-end; margin-top: 10px"
-          >
-            <button class="btn" onclick="newGuide()">New guide</button>
-          </section>
+        <div class="window" style="width: 30rem">
+          <div class="title-bar">
+            <h1 class="title">Settings</h1>
+          </div>
+          <div class="separator"></div>
+          <div class="modeless-dialog">
+            <button class="btn" onclick="toggleDarkMode()">
+              Toggle dark mode
+            </button>
+          </div>
         </div>
       </div>
       <div class="window" style="width: 70rem" id="guide-content">
