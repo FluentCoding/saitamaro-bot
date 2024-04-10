@@ -1,8 +1,9 @@
 import { Rune, Starter } from "../store/guides"
 import { patch } from '../../../.env.json'
 
+const fandomWikiImageUrl = (source: 'lolesports_gamepedia_en' | 'leagueoflegends', v: string) => `https://static.wikia.nocookie.net/${source}/images/${v}.png/revision/latest`
+
 export function getRunes() {
-    const url = (v: string) => `https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/${v}.png/revision/latest`
     return Object.fromEntries(Object.entries({
         'DEMOLISH': '7/7f/Rune_Demolish',
         'FONT OF LIFE': 'b/b7/Rune_Font_of_Life',
@@ -13,7 +14,17 @@ export function getRunes() {
         'OVERGROWTH': '1/19/Rune_Overgrowth',
         'REVITALIZE': 'd/da/Rune_Revitalize',
         'UNFLINCHING': 'a/af/Rune_Unflinching'
-    }).map(e => [e[0], url(e[1])])) as Record<Rune, string>
+    }).map(e => [e[0], fandomWikiImageUrl('lolesports_gamepedia_en', e[1])])) as Record<Rune, string>
+}
+
+export function getPrimaryRuneUrl(primaryRune: string) {
+    const v: Record<string, string> = {
+        'lt': 'f/f2/Lethal_Tempo_rune',
+        'fleet': '4/46/Fleet_Footwork_rune',
+        'conq': '2/20/Conqueror_rune',
+    }
+    if (!v[primaryRune]) return
+    return fandomWikiImageUrl('leagueoflegends', v[primaryRune])
 }
 
 export function getSummonerUrl(summoner: string) {

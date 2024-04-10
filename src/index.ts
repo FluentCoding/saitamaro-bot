@@ -1,8 +1,8 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js'
 import { token } from "../.env.json"
 import commands from './commands';
-import fastify = require('fastify');
-import path = require('path');
+import fastify from 'fastify';
+import * as path from 'path';
 import registerGuideRoutes from './routes/guide';
 import registerRiotRoutes from './routes/riot';
 import { runLeaderboardUpdater } from './commands/leaderboard';

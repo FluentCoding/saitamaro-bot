@@ -1,5 +1,5 @@
 import { Image, createCanvas, loadImage } from '@napi-rs/canvas'
-import { getRunes, getStarterItemUrl, getSummonerUrl } from '../riot/assets';
+import { getPrimaryRuneUrl, getRunes, getStarterItemUrl, getSummonerUrl } from '../riot/assets';
 import { Guide, Rune } from '../store/guides';
 
 const COLOR = '#00ffae';
@@ -24,16 +24,6 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
         roundStroke(x, y, 80, 80)
         ctx.drawImage(await image(getRunes()[rune]), x, y, 80, 80)
         strokeText(48, rune, x + 100, y + 56)
-    }
-
-    async function drawSummoner(summoner: string, x: number, y: number, w: number, h: number) {
-        try {
-            await strokeImage(getSummonerUrl(summoner), x, y, w, h)
-            return true;
-        } catch(e) {
-            console.log("Couldn't load summoner", summoner)
-            return false;
-        }
     }
 
     function roundStroke(x: number, y: number, w: number, h: number) {
@@ -70,24 +60,39 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
     await drawRune(guide.image.runes[1], 20, bottom - 250)
 
     {
-        const sums = (guide.image.sums?.split('|').map(sumPair => sumPair.split(',').map((sum) => sum.toLowerCase().trim()).filter(sum => sum != '')))?.filter((v) => v.length == 2) as [string, string][] ?? []
+        const primaryRunes = (guide.image.primaryRune?.split(',').map((pr) => getPrimaryRuneUrl(pr.toLowerCase().trim())).filter(pr => pr != undefined)) as string[] ?? []
+        let sumX = 0
+        const size = 130, distance = size + 20
+        for (const primaryRune of primaryRunes) {
+            const x = 20 + sumX, y = bottom - 500, w = size, h = size
+            try {
+                await image(primaryRune)
+                ctx.fillStyle = '#141414'
+                ctx.fillRect(x, y, w, h)
+                await strokeImage(primaryRune, x, y, w, h)   
+                sumX += distance
+            } catch(e) {
+                console.log("Couldn't load primary rune url (", primaryRune, ")")
+            }
+        }
+    } 
+    {
+        const sums = (guide.image.sums?.split('|').map(sumPair => sumPair.split(',').map((sum) => sum.toLowerCase().trim()).filter(sum => sum != '').map(sum => getSummonerUrl(sum))))?.filter((v) => v.length == 2) as [string, string][] ?? []
         let sumY = 0
         const size = 100, distance = size + 20
         for (const sum of sums) {
             try {
                 // load and cache both sums, on error skip this sum pair
-                await image(getSummonerUrl(sum[0])), await image(getSummonerUrl(sum[1]))
-                await drawSummoner(sum[0], right - 120 - distance, bottom - 220 + sumY, size, size)
-                await drawSummoner(sum[1], right - 120, bottom - 220 + sumY, size, size)
+                await image(sum[0]), await image(sum[1])
+                await strokeImage(sum[0], right - 120 - distance, bottom - 220 + sumY, size, size)
+                await strokeImage(sum[1], right - 120, bottom - 220 + sumY, size, size)
             sumY -= distance + 10
             } catch(e) {
                 console.log("Couldn't load summoners (", sum[0], sum[1], ")")
             }
         }
     }
-
     ctx.drawImage(await image(`./public/difficulty/${guide.image.difficulty}.png`), right - 450, bottom - 100)
-
-    const pngData = await canvas.encode('webp')
-    return pngData
+    
+    return await canvas.encode('webp')
 }

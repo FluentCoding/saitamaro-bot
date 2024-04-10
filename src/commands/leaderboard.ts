@@ -8,7 +8,7 @@ import timestring = require("timestring");
 
 const LIMIT = 20
 const REFRESH_INTERVAL = timestring('1h', 'ms')
-let currentUpdater: { timeout: NodeJS.Timeout, nextUpdate: number } | undefined = undefined
+let currentUpdater: { timeout: Timer, nextUpdate: number } | undefined = undefined
 
 export async function runLeaderboardUpdater(client: Client<true>, runImmediately: boolean = false) {
     if (!(await getLeaderboardMessageLocation())) return // ignore updater request if no message location exists
@@ -147,11 +147,7 @@ export default {
             }
 
             await addLeaderboardEntry(discordId, { region: server, id: summonerId })
-            if (leaderboardEntry) {
-                await interaction.editReply({ content: "Your leaderboard connection has been updated!"})
-            } else {
-                await interaction.editReply({ content: "You have been added to the leaderboards!"})
-            }
+            await interaction.editReply({ content: leaderboardEntry ? "Your leaderboard connection has been updated!" : "You have been added to the leaderboards!"})
             await updateLeaderboardMessage(interaction.client)
         } catch(e) {
             console.log("Failed to handle modal submit", e)

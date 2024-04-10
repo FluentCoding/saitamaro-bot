@@ -1,10 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, readSync, readdirSync, rmSync, writeFileSync } from "fs";
-import { Champion, NeutralChampion, allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
+import { existsSync, rmSync } from "fs";
+import { Champion, allSkins, getNeutralChampionName, randomSplashArtUrl, splashArtUrl } from "../riot/champs";
 import { renderPreview } from "./renderPreview";
 import path = require("path");
-import { emptyDirSync } from 'fs-extra';
+import { emptyDir } from 'fs-extra';
 import { prefixLog } from "../../util/log";
 import { Guide } from "../store/guides";
+import { readdir } from "fs/promises";
 
 function championDir(champion: Champion) {
     return path.join(process.cwd(), `_cache/${champion}`)
@@ -13,8 +14,8 @@ function championDir(champion: Champion) {
 export async function randomPreview(champion: Champion, guide: Guide) {
     const dir = championDir(champion)
     if (existsSync(dir)) {
-        const files = readdirSync(dir)
-        return readFileSync(path.join(dir, files[Math.floor(Math.random() * files.length)]))
+        const files = await readdir(dir)
+        return Buffer.from(await Bun.file(path.join(dir, files[Math.floor(Math.random() * files.length)])).arrayBuffer())
     } else {
         const log = prefixLog(champion)
         log("Cache does not exist, skipping cache...")
@@ -41,9 +42,9 @@ export async function cacheGuide(champion: Champion, guide: Guide) {
     } else {
         log(`${cacheSize} skins successfully generated, writing to disk now! (${skins.length - cacheSize} failed)`)
     }
-    emptyDirSync(championDir(champion)) // emptyDirSync also creates the folder if it doesn't exist
+    await emptyDir(championDir(champion)) // emptyDirSync also creates the folder if it doesn't exist
     for (const [skin, image] of Object.entries(cache)) {
-        writeFileSync(path.join(championDir(champion), `${skin}.png`), image)
+        await Bun.write(path.join(championDir(champion), `${skin}.png`), image)
     }
     log("Caching done")
 }

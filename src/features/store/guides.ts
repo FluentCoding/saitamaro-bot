@@ -11,6 +11,7 @@ export interface Guide {
     image: {
         runes: [Rune, Rune],
         sums?: string,
+        primaryRune?: string,
         starter: Starter,
         difficulty: Difficulty,
         smallText: string
@@ -47,6 +48,7 @@ export async function newGuide(champion: Champion) {
         image: {
             runes: ["SHIELD BASH", "BONE PLATING"],
             sums: '',
+            primaryRune: '',
             starter: "dblade",
             difficulty: 3,
             smallText: ''
