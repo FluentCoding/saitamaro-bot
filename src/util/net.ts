@@ -1,5 +1,5 @@
-import fetch from 'node-fetch-cache'
+import fetch from "node-fetch-cache";
 
 export async function fetchCachedJson(url: string): Promise<any> {
-    return await (await fetch(url)).json()
+  return await (await fetch(url)).json();
 }

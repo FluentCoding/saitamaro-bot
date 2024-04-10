@@ -1,11 +1,9 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "resolveJsonModule": true,
-        "strict": true,
-        "lib": ["ES2021.String"]
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "strict": true,
+    "lib": ["ES2021.String"]
+  },
+  "exclude": ["node_modules"]
 }

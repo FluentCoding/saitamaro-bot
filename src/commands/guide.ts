@@ -1,9 +1,9 @@
-import { ActionRowBuilder, AutocompleteInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, InteractionEditReplyOptions, MessageActionRowComponent, MessageActionRowComponentBuilder, MessagePayload, SlashCommandBuilder, codeBlock } from "discord.js";
-import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
-import { ButtonMetadata, createButton } from "../util/discord";
-import { feedbackChannelUrl, unrestrictedChannelId, currentSeason, defaultSeason } from "../../.env.json"
+import { ActionRowBuilder, AutocompleteInteraction, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, InteractionEditReplyOptions, MessageActionRowComponentBuilder, SlashCommandBuilder, codeBlock } from "discord.js";
+import { currentSeason, defaultSeason, feedbackChannelUrl, unrestrictedChannelId } from "../../.env.json";
 import { randomPreview } from "../features/image/cache";
 import { Champion } from "../features/riot/champs";
+import { allGuides, getGuideCaseInsensitive } from "../features/store/guides";
+import { ButtonMetadata, createButton } from "../util/discord";
 
 async function guideReply(issuer: string, championSearchQuery: string, channelId: string, topic?: string): Promise<InteractionEditReplyOptions | undefined> {
     const guideResult = await getGuideCaseInsensitive(championSearchQuery)
