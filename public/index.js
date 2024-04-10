@@ -29,6 +29,11 @@ function toggleDarkMode() {
 
 applyDarkMode();
 
+window.addEventListener(
+  "beforeunload",
+  (e) => currentGuideView !== undefined && e.preventDefault()
+);
+
 const guidesDiv = document.getElementById("guides");
 const guideContentDiv = document.getElementById("guide-content");
 let currentGuideView = undefined;
