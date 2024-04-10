@@ -15,11 +15,13 @@ import { secureRoutes } from "../middleware/auth";
 export default function registerGuideRoutes(app: FastifyInstance) {
   secureRoutes(app, "/guide/", "/guides");
   app.get("/guides", async () => {
-    return Object.entries(await allGuides()).map(([k, v]) => ({
-      name: k,
-      season: v.season ?? defaultSeason,
-      public: v.public,
-    }));
+    return Object.entries(await allGuides())
+      .map(([k, v]) => ({
+        name: k,
+        season: v.season ?? defaultSeason,
+        public: v.public,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
   app.get("/guide/:champion", async (req) => {
     const { champion } = req.params as { champion: Champion };
