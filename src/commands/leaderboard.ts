@@ -163,9 +163,10 @@ export default {
         .setTitle("Set up your connection");
 
       const leaderboardEntry = await getLeaderboardEntry(interaction.user.id);
-      const favoriteColorInput = new TextInputBuilder()
+      const summonerInput = new TextInputBuilder()
         .setCustomId("summonerName")
-        .setLabel("Riot ID (empty = remove) [myname#euw]")
+        .setLabel("Riot ID (empty = remove)")
+        .setPlaceholder("AAA#000")
         .setValue(
           leaderboardEntry?.id
             ? (await getSummonerNickname(
@@ -174,18 +175,21 @@ export default {
               )) ?? ""
             : ""
         )
+        // https://support-leagueoflegends.riotgames.com/hc/en-us/articles/360041788533-Riot-ID-FAQ#:~:text=Game%20Names%20must,OC1%2C%20and%20NA1.
+        .setMaxLength(16 + 1 + 5)
         .setRequired(false)
         .setStyle(TextInputStyle.Short);
 
       const serverInput = new TextInputBuilder()
         .setCustomId("server")
-        .setLabel("Server [EUW | EUNE | NA]")
-        .setValue(leaderboardEntry?.region ?? "")
+        .setLabel("Server [EUW | EUNE | NA | OCE | TR | RU | KR]")
+        .setPlaceholder("euw")
+        .setMaxLength(4)
         .setStyle(TextInputStyle.Short);
 
       const firstActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-          favoriteColorInput
+          summonerInput
         );
       const secondActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(

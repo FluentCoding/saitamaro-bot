@@ -89,6 +89,10 @@ export function regionFromStr(region: string) {
     euw: PlatformId.EUW1,
     eune: PlatformId.EUNE1,
     na: PlatformId.NA1,
+    oce: PlatformId.OC1,
+    tr: PlatformId.TR1,
+    ru: PlatformId.RU,
+    kr: PlatformId.KR,
   }[region] as LoLRegion | undefined;
 }
 
