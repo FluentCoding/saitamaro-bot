@@ -59,7 +59,7 @@ export async function runLeaderboardUpdater(
 }
 async function updateLeaderboardMessage(client: Client<true>) {
   try {
-    console.log("Triggering leaderboard update!");
+    console.info("Triggering leaderboard update!");
     const messageLocation = await getLeaderboardMessageLocation();
     if (!messageLocation) return;
 
@@ -71,7 +71,7 @@ async function updateLeaderboardMessage(client: Client<true>) {
       await renderLeaderboard(client)
     );
   } catch (e) {
-    console.log("Failed to update leaderboard message", e);
+    console.error("Failed to update leaderboard message", e);
   }
 }
 async function renderLeaderboard(client: Client<true>) {
@@ -169,7 +169,7 @@ export default {
       runLeaderboardUpdater(interaction.client); // (re-)start message updater cycle
       await interaction.deleteReply();
     } catch (e) {
-      console.log("Failed to create leaderboard message", e);
+      console.error("Failed to create leaderboard message", e);
     }
   },
   button: async (interaction: ButtonInteraction, _: ButtonMetadata) => {
@@ -215,7 +215,7 @@ export default {
       modal.addComponents(firstActionRow, secondActionRow);
       await interaction.showModal(modal);
     } catch (e) {
-      console.log("Failed to create leaderboard modal", e);
+      console.error("Failed to create leaderboard modal", e);
     }
   },
   modalSubmit: async (interaction: ModalSubmitInteraction) => {
@@ -268,7 +268,7 @@ export default {
       });
       await updateLeaderboardMessage(interaction.client);
     } catch (e) {
-      console.log("Failed to handle modal submit", e);
+      console.error("Failed to handle modal submit", e);
       await interaction.editReply({ content: "Failed to handle modal submit" });
     }
   },

@@ -10,7 +10,7 @@ import { ButtonMetadata } from "./util/discord";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.once(Events.ClientReady, (c) => {
-  console.log(`Ready! Logged in as ${c.user.tag}`);
+  console.info(`Ready! Logged in as ${c.user.tag}`);
   runLeaderboardUpdater(c, true);
 });
 client.on(Events.InteractionCreate, async (interaction) => {

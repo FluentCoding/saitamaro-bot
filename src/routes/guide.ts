@@ -42,12 +42,12 @@ export default function registerGuideRoutes(app: FastifyInstance) {
     }
 
     await newGuide(champion);
-    console.log(champion, "guide created.");
+    console.info(champion, "guide created.");
   });
   app.get("/guide/remove/:champion", async (req) => {
     const { champion } = req.params as { champion: Champion };
     await removeGuide(champion);
-    console.log(champion, "guide removed.");
+    console.info(champion, "guide removed.");
   });
   app.get("/guide/image/:champion", async (req, reply) => {
     const { champion } = req.params as { champion: Champion };
@@ -59,15 +59,14 @@ export default function registerGuideRoutes(app: FastifyInstance) {
   app.post("/guide/save/:champion", async (req) => {
     const { champion } = req.params as { champion: Champion };
     const { name, ...guide } = JSON.parse(req.body as string);
-    console.log(guide);
     await setGuide(champion, guide);
-    console.log(champion, "guide updated.");
+    console.info(champion, "guide updated.");
     return {};
   });
   app.post("/guide/visibility/:champion", async (req) => {
     const { champion } = req.params as { champion: Champion };
     const visibility = JSON.parse(req.body as string)["public"];
     await setGuideVisibility(champion, visibility);
-    console.log(champion, "visibility toggled.");
+    console.info(champion, "visibility toggled.");
   });
 }

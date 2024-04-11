@@ -68,7 +68,7 @@ export default {
             }
             await interaction.respond(searchResult.sort().map((c) => ({name: c, value: c})))
         } catch(e) {
-            console.log("Failed to autocomplete guides", e)
+            console.error("Failed to autocomplete guides", e)
         }
     },
     button: async (interaction: ButtonInteraction, metadata: ButtonMetadata & { champ: string, iss: string }) => {

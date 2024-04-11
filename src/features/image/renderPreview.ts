@@ -44,7 +44,7 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
     x: number,
     y: number,
     w: number,
-    h: number,
+    h: number
   ) {
     const img = await image(url);
     ctx.drawImage(img, x, y, w, h);
@@ -70,7 +70,7 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
     20,
     bottom - 150,
     128,
-    128,
+    128
   );
   strokeText(64, "STARTER ITEM", 20 + 128 + 25, bottom - 150 + 128 / 2 + 18);
   await drawRune(guide.image.runes[0], 20, bottom - 350);
@@ -97,7 +97,7 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
         await strokeImage(primaryRune, x, y, w, h);
         sumX += distance;
       } catch (e) {
-        console.log("Couldn't load primary rune url (", primaryRune, ")");
+        console.error("Couldn't load primary rune url (", primaryRune, ")");
       }
     }
   }
@@ -110,7 +110,7 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
             .split(",")
             .map((sum) => sum.toLowerCase().trim())
             .filter((sum) => sum != "")
-            .map((sum) => getSummonerUrl(sum)),
+            .map((sum) => getSummonerUrl(sum))
         )
         ?.filter((v) => v.length == 2) as [string, string][]) ?? [];
     let sumY = 0;
@@ -125,19 +125,19 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
           right - 120 - distance,
           bottom - 220 + sumY,
           size,
-          size,
+          size
         );
         await strokeImage(sum[1], right - 120, bottom - 220 + sumY, size, size);
         sumY -= distance + 10;
       } catch (e) {
-        console.log("Couldn't load summoners (", sum[0], sum[1], ")");
+        console.error("Couldn't load summoners (", sum[0], sum[1], ")");
       }
     }
   }
   ctx.drawImage(
     await image(`./public/difficulty/${guide.image.difficulty}.png`),
     right - 450,
-    bottom - 100,
+    bottom - 100
   );
 
   return await canvas.encode("webp");

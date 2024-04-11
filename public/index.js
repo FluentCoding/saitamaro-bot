@@ -284,7 +284,7 @@ function storeGuideValues() {
       Object.keys(currentGuideView.guide.contents)[currentGuideView.pageTab]
     ] = document.getElementById("page-text").value;
   }
-  console.log("Updated:", currentGuideView.guide);
+  console.info("Updated:", currentGuideView.guide);
   return true;
 }
 
@@ -344,7 +344,7 @@ async function saveGuide() {
   currentGuideView.isPropertiesTab && (await renderImage());
   await guides();
   saveBtn.removeAttribute("disabled");
-  console.log("Saved!");
+  console.info("Saved!");
 }
 
 async function canCreateGuide() {
