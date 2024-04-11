@@ -15,6 +15,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
+import { guildId } from "../../.env.json";
 import {
   LolRank,
   getSoloDuoRank,
@@ -79,15 +80,30 @@ async function renderLeaderboard(client: Client<true>) {
       await Promise.all(
         Object.entries(await getLeaderboard()).map(
           async ([discordId, entry]) => {
+            const member = await client.guilds.cache
+              .get(guildId)
+              ?.members.fetch(discordId)
+              .catch(async (_) => {
+                console.error(
+                  `Seems like ${
+                    (
+                      await client.users.fetch(discordId).catch((_) => ({
+                        displayName: undefined,
+                      }))
+                    ).displayName
+                  } left the server, removing from leaderboard`
+                );
+                await removeLeaderboardEntry(discordId);
+                return undefined;
+              });
             return [
-              (await client.users.fetch(discordId).catch((_) => undefined))
-                ?.displayName,
+              member?.displayName,
               await getSoloDuoRank(regionFromStr(entry.region)!, entry.id),
             ];
           }
         )
       )
-    ).filter(([name, entry]) => name != undefined) as [string, LolRank][]
+    ).filter(([name]) => name != undefined) as [string, LolRank][]
   )
     .sort((a, b) => sortRank(a[1], b[1]))
     .slice(0, LIMIT)
