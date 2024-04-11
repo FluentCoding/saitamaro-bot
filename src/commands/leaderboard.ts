@@ -4,6 +4,7 @@ import {
   ChatInputCommandInteraction,
   Client,
   Colors,
+  DiscordAPIError,
   EmbedBuilder,
   MessageActionRowComponentBuilder,
   ModalActionRowComponentBuilder,
@@ -83,15 +84,22 @@ async function renderLeaderboard(client: Client<true>) {
             const member = await client.guilds.cache
               .get(guildId)
               ?.members.fetch(discordId)
-              .catch(async (_) => {
+              .catch(async (e: DiscordAPIError) => {
+                const reason =
+                  e.code == 10013
+                    ? "unknown"
+                    : e.code == 10007
+                    ? "left"
+                    : undefined;
+                if (!reason) return undefined; // don't delete if it's any error but unknown user/member
                 console.error(
                   `Seems like ${
                     (
                       await client.users.fetch(discordId).catch((_) => ({
                         displayName: undefined,
                       }))
-                    ).displayName
-                  } left the server, removing from leaderboard`
+                    ).displayName ?? "a deleted user"
+                  } left the server, removing from leaderboard (reason: ${reason})`
                 );
                 await removeLeaderboardEntry(discordId);
                 return undefined;
