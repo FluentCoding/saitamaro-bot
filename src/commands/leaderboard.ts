@@ -41,7 +41,7 @@ let currentUpdater: { timeout: Timer; nextUpdate: number } | undefined =
 
 export async function runLeaderboardUpdater(
   client: Client<true>,
-  runImmediately: boolean = false,
+  runImmediately: boolean = false
 ) {
   if (!(await getLeaderboardMessageLocation())) return; // ignore updater request if no message location exists
   if (currentUpdater) clearInterval(currentUpdater.timeout);
@@ -63,11 +63,11 @@ async function updateLeaderboardMessage(client: Client<true>) {
     if (!messageLocation) return;
 
     const channel = (await client.channels.fetch(
-      messageLocation.channelId,
+      messageLocation.channelId
     )) as TextChannel | null;
     await channel?.messages.edit(
       messageLocation.messageId,
-      await renderLeaderboard(client),
+      await renderLeaderboard(client)
     );
   } catch (e) {
     console.log("Failed to update leaderboard message", e);
@@ -84,8 +84,8 @@ async function renderLeaderboard(client: Client<true>) {
                 ?.displayName,
               await getSoloDuoRank(regionFromStr(entry.region)!, entry.id),
             ];
-          },
-        ),
+          }
+        )
       )
     ).filter(([name, entry]) => name != undefined) as [string, LolRank][]
   )
@@ -113,7 +113,11 @@ async function renderLeaderboard(client: Client<true>) {
             inline: true,
           },
         ],
-        description: `Updates <t:${Math.round(currentUpdater ? currentUpdater.nextUpdate / 1000 : +new Date() / 1000 + REFRESH_INTERVAL / 1000)}:R>`,
+        description: `Updates <t:${Math.round(
+          currentUpdater
+            ? currentUpdater.nextUpdate / 1000
+            : +new Date() / 1000 + REFRESH_INTERVAL / 1000
+        )}:R>`,
         timestamp: new Date(),
       }),
     ],
@@ -122,7 +126,7 @@ async function renderLeaderboard(client: Client<true>) {
         createButton("Your connection", {
           cmd: "leaderboard",
           tag: "config",
-        }),
+        })
       ),
     ],
   };
@@ -140,7 +144,7 @@ export default {
         ephemeral: true,
       });
       let res = await interaction.channel!.send(
-        await renderLeaderboard(interaction.client),
+        await renderLeaderboard(interaction.client)
       );
       await setLeaderboardMessageLocation({
         channelId: interaction.channelId,
@@ -159,17 +163,16 @@ export default {
         .setTitle("Set up your connection");
 
       const leaderboardEntry = await getLeaderboardEntry(interaction.user.id);
-
       const favoriteColorInput = new TextInputBuilder()
         .setCustomId("summonerName")
-        .setLabel("Summoner name (empty = remove)")
+        .setLabel("Riot ID (empty = remove) [myname#euw]")
         .setValue(
           leaderboardEntry?.id
             ? (await getSummonerNickname(
                 regionFromStr(leaderboardEntry.region)!,
-                leaderboardEntry.id,
+                leaderboardEntry.id
               )) ?? ""
-            : "",
+            : ""
         )
         .setRequired(false)
         .setStyle(TextInputStyle.Short);
@@ -182,11 +185,11 @@ export default {
 
       const firstActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-          favoriteColorInput,
+          favoriteColorInput
         );
       const secondActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-          serverInput,
+          serverInput
         );
 
       modal.addComponents(firstActionRow, secondActionRow);

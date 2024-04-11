@@ -2,6 +2,8 @@ import { PlatformId, RiotAPI } from "@fightmegg/riot-api";
 import { apiKey } from "../../../.env.json";
 
 const rAPI = new RiotAPI(apiKey);
+const RANKED_TOKEN = "RANKED_SOLO_5x5";
+const nearestRegion = PlatformId.EUROPE;
 
 // copied from non-public type definition
 export type LoLRegion =
@@ -24,55 +26,61 @@ export type LoLRegion =
 export type LolRank = { tier: string; rank: string; lp: number };
 export async function getSoloDuoRank(
   region: LoLRegion,
-  summonerId: string,
+  summonerId: string
 ): Promise<LolRank> {
   try {
-    const summoners = (
-      await rAPI.league.getEntriesBySummonerId({
-        region,
-        summonerId,
-      })
-    ).filter((v) => v.queueType == "RANKED_SOLO_5x5");
-    if (summoners.length != 1) return { tier: `Unranked`, rank: "", lp: 0 };
-    const summoner = summoners[0];
+    const summoner = await getRankedSummonerEntry(region, summonerId);
+    if (!summoner) return { tier: `Unranked`, rank: "", lp: 0 };
     return {
       tier: `${summoner.tier[0]}${summoner.tier.slice(1).toLowerCase()}`,
       rank: summoner.rank,
       lp: summoner.leaguePoints,
     };
   } catch (e) {
-    console.log(`Couldn't fetch summoner ${summonerId}`);
+    console.error(`Couldn't fetch rank of summoner ${summonerId}`);
     return { tier: `error`, rank: "error", lp: -1 };
   }
 }
 
 export async function getSummonerID(
-  region: LoLRegion,
-  summonerName: string,
+  leagueRegion: LoLRegion,
+  summonerName: string
 ): Promise<string | undefined> {
-  return (
-    await rAPI.summoner
-      .getBySummonerName({
-        region,
-        summonerName,
-      })
-      .catch((e) => ({ id: undefined }))
-  ).id;
+  try {
+    const account = await rAPI.account.getByRiotId({
+      region: nearestRegion,
+      gameName: summonerName.slice(0, summonerName.lastIndexOf("#")),
+      tagLine: summonerName.slice(summonerName.lastIndexOf("#") + 1),
+    });
+    const summoner = await rAPI.summoner.getByPUUID({
+      puuid: account.puuid,
+      region: leagueRegion,
+    });
+    return summoner.id;
+  } catch (e) {
+    console.error(`Couldn't fetch summoner id of ${summonerName}`);
+  }
 }
 
 export async function getSummonerNickname(
-  region: LoLRegion,
-  summonerId: string,
+  leagueRegion: LoLRegion,
+  summonerId: string
 ): Promise<string | undefined> {
   try {
-    const summoners = await rAPI.league.getEntriesBySummonerId({
-      region,
+    const summoner = await rAPI.summoner.getBySummonerId({
+      region: leagueRegion,
       summonerId,
     });
-    if (summoners.length != 1) return;
-    return summoners[0].summonerName;
+    if (!summoner) return;
+
+    const puuid = summoner.puuid;
+    const account = await rAPI.account.getByPUUID({
+      region: nearestRegion,
+      puuid,
+    });
+    return `${account.gameName}#${account.tagLine}`;
   } catch (e) {
-    console.log(`Couldn't fetch summoner ${summonerId}`);
+    console.error(`Couldn't fetch summoner nickname of ${summonerId}`);
   }
 }
 
@@ -82,4 +90,13 @@ export function regionFromStr(region: string) {
     eune: PlatformId.EUNE1,
     na: PlatformId.NA1,
   }[region] as LoLRegion | undefined;
+}
+
+async function getRankedSummonerEntry(region: LoLRegion, summonerId: string) {
+  return (
+    await rAPI.league.getEntriesBySummonerId({
+      region,
+      summonerId,
+    })
+  ).filter((v) => v.queueType == RANKED_TOKEN)[0];
 }
