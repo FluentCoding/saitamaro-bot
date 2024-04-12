@@ -23,8 +23,8 @@ export async function randomPreview(champion: Champion, guide: Guide) {
     const files = await readdir(dir);
     return Buffer.from(
       await Bun.file(
-        path.join(dir, files[Math.floor(Math.random() * files.length)]),
-      ).arrayBuffer(),
+        path.join(dir, files[Math.floor(Math.random() * files.length)])
+      ).arrayBuffer()
     );
   } else {
     const log = prefixLog(champion);
@@ -45,13 +45,13 @@ export async function cacheGuide(champion: Champion, guide: Guide) {
         skins.map(async (skin) => [
           skin,
           await renderPreview(await splashArtUrl(neutralChampion, skin), guide),
-        ]),
+        ])
       )
     )
       .filter((result) => result.status == "fulfilled")
       .map((result) => {
         return (result as PromiseFulfilledResult<[number, Buffer]>).value;
-      }),
+      })
   );
 
   const cacheSize = Object.keys(cache).length;
@@ -60,7 +60,9 @@ export async function cacheGuide(champion: Champion, guide: Guide) {
     return;
   } else {
     log(
-      `${cacheSize} skins successfully generated, writing to disk now! (${skins.length - cacheSize} failed)`,
+      `${cacheSize} skins successfully generated, writing to disk now! (${
+        skins.length - cacheSize
+      } failed)`
     );
   }
   await emptyDir(championDir(champion)); // emptyDirSync also creates the folder if it doesn't exist
