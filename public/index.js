@@ -40,7 +40,7 @@ let currentGuideView = undefined;
 let swapperoo = 0;
 
 async function guides() {
-  const guides = await (await fetch("/guides")).json();
+  const guides = await (await fetch("/guide/all")).json();
   guidesDiv.innerHTML = guides.reduce(
     (a, v, i) => a + templates["guide-option-template"]({ index: i, guide: v }),
     ""
@@ -318,6 +318,7 @@ async function toggleVisibility() {
   currentGuideView.guide.public = !currentGuideView.guide.public;
   await fetch(`/guide/visibility/${currentGuideView.guide.name}`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ public: currentGuideView.guide.public }),
   });
   renderVisibility();
@@ -337,9 +338,12 @@ async function saveGuide() {
 
   const saveBtn = document.getElementById("save");
   saveBtn.setAttribute("disabled", true);
+
+  const { name, ...guideWithoutName } = currentGuideView.guide;
   await fetch(`/guide/save/${currentGuideView.guide.name}`, {
     method: "POST",
-    body: JSON.stringify(currentGuideView.guide),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(guideWithoutName),
   });
   currentGuideView.isPropertiesTab && (await renderImage());
   await guides();

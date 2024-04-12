@@ -1,7 +1,10 @@
 window.fetch = new Proxy(window.fetch, {
   apply: function (target, that, args) {
     if (!args[1]) args[1] = {};
-    args[1].headers = { authorization: localStorage.getItem("authToken") };
+    args[1].headers = {
+      ...args[1].headers,
+      authorization: localStorage.getItem("authToken"),
+    };
     let temp = target.apply(that, args);
     return temp.then((res) => {
       if (res.status === 401) {

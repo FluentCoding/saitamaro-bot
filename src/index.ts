@@ -1,11 +1,12 @@
+import staticPlugin from "@elysiajs/static";
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import fastify from "fastify";
-import * as path from "path";
+import Elysia from "elysia";
 import { token } from "../.env.json";
 import commands from "./commands";
 import { runLeaderboardUpdater } from "./commands/leaderboard";
-import registerGuideRoutes from "./routes/guide";
-import registerRiotRoutes from "./routes/riot";
+import auth from "./middleware/auth";
+import guide from "./routes/guide";
+import riot from "./routes/riot";
 import { ButtonMetadata } from "./util/discord";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -57,12 +58,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 client.login(token);
 
-const app = fastify();
-app.register(require("@fastify/static"), {
-  root: path.join(__dirname, "../public"),
-  prefix: "/dashboard",
-});
-registerGuideRoutes(app);
-registerRiotRoutes(app);
-
-app.listen({ host: "0.0.0.0", port: 4000 });
+new Elysia()
+  .use(staticPlugin({ prefix: "/dashboard" }))
+  .guard({ beforeHandle: auth }, (app) =>
+    // @ts-ignore
+    app.group("/guide", guide).group("/riot", riot)
+  )
+  .listen(4000);

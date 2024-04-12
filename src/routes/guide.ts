@@ -1,8 +1,9 @@
-import { FastifyInstance } from "fastify";
+import Elysia, { error, t } from "elysia";
 import { defaultSeason } from "../../.env.json";
 import { randomPreview } from "../features/image/cache";
 import { Champion, getChampions } from "../features/riot/champs";
 import {
+  Guide,
   allGuides,
   getGuide,
   newGuide,
@@ -10,63 +11,67 @@ import {
   setGuide,
   setGuideVisibility,
 } from "../features/store/guides";
-import { secureRoutes } from "../middleware/auth";
 
-export default function registerGuideRoutes(app: FastifyInstance) {
-  secureRoutes(app, "/guide/", "/guides");
-  app.get("/guides", async () => {
-    return Object.entries(await allGuides())
-      .map(([k, v]) => ({
-        name: k,
-        season: v.season ?? defaultSeason,
-        public: v.public,
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
-  app.get("/guide/:champion", async (req) => {
-    const { champion } = req.params as { champion: Champion };
-    const guide = await getGuide(champion);
-    if (guide) {
-      return { ...guide, name: champion };
-    }
-  });
-  app.get("/guide/new/:champion", async (req, reply) => {
-    const { champion } = req.params as { champion: Champion };
+type ParamsWithChampion = { params: { champion: Champion } };
 
-    if (
-      (await getGuide(champion)) ||
-      !(await getChampions()).includes(champion)
-    ) {
-      reply.status(500).send();
-      return;
-    }
+export default (app: Elysia) =>
+  app
+    .get("/all", async () => {
+      return Object.entries(await allGuides())
+        .map(([k, v]) => ({
+          name: k,
+          season: v.season ?? defaultSeason,
+          public: v.public,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    })
+    .get(
+      "/new/:champion",
+      async ({ params: { champion } }: ParamsWithChampion) => {
+        if (
+          (await getGuide(champion)) ||
+          !(await getChampions()).includes(champion)
+        ) {
+          return error(500);
+        }
 
-    await newGuide(champion);
-    console.info(champion, "guide created.");
-  });
-  app.get("/guide/remove/:champion", async (req) => {
-    const { champion } = req.params as { champion: Champion };
-    await removeGuide(champion);
-    console.info(champion, "guide removed.");
-  });
-  app.get("/guide/image/:champion", async (req, reply) => {
-    const { champion } = req.params as { champion: Champion };
-    const guide = await getGuide(champion);
-    if (!guide) return undefined;
-    reply.type("image/png");
-    reply.send(await randomPreview(champion, guide));
-  });
-  app.post("/guide/save/:champion", async (req) => {
-    const { champion } = req.params as { champion: Champion };
-    const { name, ...guide } = JSON.parse(req.body as string);
-    await setGuide(champion, guide);
-    console.info(champion, "guide updated.");
-    return {};
-  });
-  app.post("/guide/visibility/:champion", async (req) => {
-    const { champion } = req.params as { champion: Champion };
-    const visibility = JSON.parse(req.body as string)["public"];
-    await setGuideVisibility(champion, visibility);
-    console.info(champion, "visibility toggled.");
-  });
-}
+        await newGuide(champion);
+        console.info(champion, "guide created.");
+      }
+    )
+    .get(
+      "/remove/:champion",
+      async ({ params: { champion } }: ParamsWithChampion) => {
+        await removeGuide(champion);
+        console.info(champion, "guide removed.");
+      }
+    )
+    .get(
+      "/image/:champion",
+      async ({ params: { champion } }: ParamsWithChampion) => {
+        const guide = await getGuide(champion);
+        if (!guide) return undefined;
+        return new Response(await randomPreview(champion, guide), {
+          headers: { "Content-Type": "image/png" },
+        });
+      }
+    )
+    .post("/save/:champion", async ({ params: { champion }, body }) => {
+      await setGuide(champion as Champion, body as Guide);
+      console.info(champion, "guide updated.");
+      return {};
+    })
+    .post(
+      "/visibility/:champion",
+      async ({ params: { champion }, body }) => {
+        await setGuideVisibility(champion as Champion, body.public);
+        console.info(champion, "visibility toggled.");
+      },
+      { body: t.Object({ public: t.Boolean() }) }
+    )
+    .get("/:champion", async ({ params: { champion } }: ParamsWithChampion) => {
+      const guide = await getGuide(champion);
+      if (guide) {
+        return { ...guide, name: champion };
+      }
+    });

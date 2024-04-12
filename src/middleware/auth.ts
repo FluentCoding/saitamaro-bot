@@ -1,31 +1,12 @@
-import {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-  HookHandlerDoneFunction,
-} from "fastify";
+import { error } from "elysia";
 import { accounts } from "../../.env.json";
 
-function checkToken(authorizedPrefixes: string[]) {
-  return (
-    req: FastifyRequest,
-    res: FastifyReply,
-    done: HookHandlerDoneFunction,
-  ) => {
-    if (authorizedPrefixes.find((prefix) => req.raw.url?.startsWith(prefix))) {
-      const token = Buffer.from(
-        req.headers.authorization ?? "",
-        "base64",
-      ).toString("ascii");
-      if (!accounts.includes(token)) {
-        res.code(401).send();
-        done(new Error("Unauthorized"));
-      }
-    }
-    done();
-  };
-}
-
-export function secureRoutes(app: FastifyInstance, ...routes: string[]) {
-  app.addHook("onRequest", checkToken(routes));
-}
+export default ({ request }: { request: Request }) => {
+  const token = Buffer.from(
+    request.headers.get("authorization") ?? "",
+    "base64"
+  ).toString("ascii");
+  if (!accounts.includes(token)) {
+    return error(401);
+  }
+};
