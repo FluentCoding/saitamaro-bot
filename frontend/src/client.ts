@@ -24,4 +24,6 @@ window.fetch = new Proxy(window.fetch, {
   },
 });
 
-export const client = treaty<Server>("localhost:4000");
+export const client = treaty<Server>(
+  `${window.location.protocol + "//" + window.location.hostname}:4000`
+);
