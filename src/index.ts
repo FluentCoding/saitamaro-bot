@@ -1,3 +1,4 @@
+import cors from "@elysiajs/cors";
 import staticPlugin from "@elysiajs/static";
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import Elysia from "elysia";
@@ -58,10 +59,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 client.login(token);
 
-new Elysia()
-  .use(staticPlugin({ prefix: "/dashboard" }))
-  .guard({ beforeHandle: auth }, (app) =>
-    // @ts-ignore
-    app.group("/guide", guide).group("/riot", riot)
-  )
+const app = new Elysia()
+  .use(cors()) // TODO remove
+  .use(staticPlugin({ assets: "./frontend/dist", prefix: "/" }))
+  .guard({ beforeHandle: auth }, (app) => app.use(guide).use(riot))
   .listen(4000);
+
+export type Server = typeof app;

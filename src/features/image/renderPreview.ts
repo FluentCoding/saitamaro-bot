@@ -135,7 +135,7 @@ export async function renderPreview(splashUrl: string, guide: Guide) {
     }
   }
   ctx.drawImage(
-    await image(`./public/difficulty/${guide.image.difficulty}.png`),
+    await image(`./assets/difficulty/${guide.image.difficulty}.png`),
     right - 450,
     bottom - 100
   );

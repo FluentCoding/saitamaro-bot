@@ -1,0 +1,32 @@
+.image-prop-label {
+  min-width: 100px;
+}
+.btn.active {
+  background: black;
+  border-radius: 6px;
+  color: white;
+  font-family: Chicago_12;
+}
+.btn.spaced {
+  margin: 3px;
+}
+.btn:disabled {
+  cursor: auto;
+}
+ul[role] {
+  cursor: auto;
+}
+.rune {
+  min-width: 150px;
+  min-height: 50px;
+  margin: 3px;
+}
+.disabled-window {
+  pointer-events: none;
+  user-select: none;
+}
+.rowLayout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
