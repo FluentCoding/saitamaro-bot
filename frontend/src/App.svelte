@@ -8,13 +8,7 @@
 
 <div
   id="modal"
-  style="
-        position: absolute;
-        z-index: 1;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      "
+  class="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
 >
   {#key $modal}
     {#if $modal == "new_game"}
@@ -23,39 +17,32 @@
   {/key}
 </div>
 <div class="rowLayout">
-  <div>
-    <div class="window" style="width: 30rem">
+  <div class="w-[25rem]">
+    <div class="window">
       <div class="title-bar">
         <h1 class="title">Guides</h1>
       </div>
       <div class="separator"></div>
       <div class="modeless-dialog">
-        <div style="justify-content: flex-start">
-          <GuideList
-            updateSelectedGuide={(guide) => selectedGuide.set(guide)}
-          />
-        </div>
-        <section
-          class="field-row"
-          style="justify-content: flex-end; margin-top: 10px"
-        >
+        <GuideList updateSelectedGuide={(guide) => selectedGuide.set(guide)} />
+        <section class="field-row justify-end mt-3">
           <button class="btn" on:click={() => openModal("new_game")}
             >New guide</button
           >
         </section>
       </div>
     </div>
-    <div class="window" style="width: 30rem">
-      <div class="title-bar">
-        <h1 class="title">Settings</h1>
-      </div>
-      <div class="separator"></div>
-      <div class="modeless-dialog">
-        <DarkModeButton />
-      </div>
-    </div>
   </div>
-  <div class="window" style="width: 70rem" id="guide-content">
+  <div class="window w-[70rem]">
     <GuideView />
+  </div>
+  <div class="window">
+    <div class="title-bar">
+      <h1 class="title">Settings</h1>
+    </div>
+    <div class="separator"></div>
+    <div class="modeless-dialog">
+      <DarkModeButton />
+    </div>
   </div>
 </div>

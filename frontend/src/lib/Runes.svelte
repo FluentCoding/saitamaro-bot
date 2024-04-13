@@ -38,7 +38,6 @@
   <div>
     {#each runeRow as rune}
       <button
-        style="text-transform: capitalize;"
         class="btn rune {guide.image.runes.includes(rune) && 'active'}"
         on:click={() => onRuneClick(row, rune)}
         >{humanReadableRune(rune)}</button

@@ -32,11 +32,11 @@
           updateSelectedGuide(guide.name);
         }}
       />
-      <label style="width: 100%" for="guide{index}"
+      <label class="w-full" for="guide{index}"
         >{guide.name}
-        <b style="float: right">
+        <b class="float-right">
           ({#if guide.public}PUBLIC{:else}PRIVATE{/if}) [SZN
-          <span style="color: tomato">{guide.season}</span>]
+          <span class="text-[tomato]">{guide.season}</span>]
         </b></label
       >
     </div>

@@ -13,10 +13,10 @@
   }
 </script>
 
-<div class="modal-dialog outer-border" style="width: 40rem">
+<div class="modal-dialog outer-border w-[20rem]">
   <div class="inner-border center">
     <div class="modal-contents">
-      <h1 class="modal-text">Create new guide</h1>
+      <h1 class="modal-text mb-2">Create new guide</h1>
       <div class="field-row">
         <label
           >Select champ: <input
@@ -33,12 +33,11 @@
           {/await}
         </datalist>
       </div>
-      <section class="field-row" style="justify-content: flex-end">
+      <section class="field-row justify-end">
         <button class="btn" on:click={closeModal}>Cancel</button>
         <button
-          class="btn"
+          class="btn w-[95px]"
           id="create-guide-btn"
-          style="width: 95px"
           on:click={createGuide}
           disabled={!champion || disabled}>OK</button
         >

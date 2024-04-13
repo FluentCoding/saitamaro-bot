@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .image-prop-label {
   min-width: 100px;
 }
@@ -9,6 +13,11 @@
 }
 .btn.spaced {
   margin: 3px;
+}
+.btn.page {
+  padding-left: 10px;
+  padding-right: 10px;
+  line-height: 20px;
 }
 .btn:disabled {
   cursor: auto;

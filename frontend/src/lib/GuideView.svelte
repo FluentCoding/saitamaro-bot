@@ -143,7 +143,7 @@
   </div>
   <div class="separator"></div>
   <div class="modeless-dialog">
-    <ul role="menubar" id="guide-tabs">
+    <ul role="menubar" class="!mb-2">
       {#each tabs as tab}
         <button
           class="btn spaced {currentTab == tab && 'active'}"
@@ -151,20 +151,19 @@
         >
       {/each}
     </ul>
-    <div style="height:10px"></div>
     {#if currentTab == "Image"}
       <div class="rowLayout">
         <div>
           <section class="field-row">
             <span class="modeless-text image-prop-label">Starter item:</span>
-            <select bind:value={guide.image.starter}>
+            <select bind:value={guide.image.starter} class="pl-1">
               <option value="dblade">Doran's Blade</option>
               <option value="dshield">Doran's Shield</option>
             </select>
           </section>
           <section class="field-row">
             <span class="modeless-text image-prop-label">Difficulty:</span>
-            <select bind:value={guide.image.difficulty}>
+            <select bind:value={guide.image.difficulty} class="pl-1">
               <option value={1}>Very easy</option>
               <option value={2}>Easy</option>
               <option value={3}>Moderate</option>
@@ -174,7 +173,7 @@
           </section>
           <section class="field-row">
             <span class="modeless-text image-prop-label">Runes:</span>
-            <div style="display: block"><Runes {guide} /></div>
+            <div><Runes {guide} /></div>
           </section>
           <section class="field-row">
             <label for="optional_text" class="modeless-text image-prop-label"
@@ -183,7 +182,7 @@
             <input
               id="optional_text"
               type="text"
-              style="width: 100%"
+              class="w-full"
               placeholder=""
               maxlength="48"
               bind:value={guide.image.smallText}
@@ -196,7 +195,7 @@
             <input
               id="primary_rune"
               type="text"
-              style="width: 100%"
+              class="w-full"
               placeholder=""
               maxlength="48"
               bind:value={guide.image.primaryRune}
@@ -210,21 +209,18 @@
             <input
               id="sums"
               type="text"
-              style="width: 100%"
+              class="w-full"
               placeholder=""
               maxlength="48"
               bind:value={guide.image.sums}
             />
           </section>
         </div>
-        <div
-          class="window"
-          style="margin: 0; margin-left: 20px; margin-bottom: 20px"
-        >
+        <div class="window m-0 ml-5 mb-5">
           <div class="title-bar">
             <h1 class="title">Preview</h1>
           </div>
-          <div id="img-container" style="width: 482px; height: 284px">
+          <div id="img-container" class="w-[482px] h-[284px]">
             {#if guideImageSrc}
               <img width="482" alt={`${champion} image`} src={guideImageSrc} />
             {/if}
@@ -234,31 +230,31 @@
     {:else}
       <div class="rowLayout">
         <!-- svelte-ignore a11y-unknown-role -->
-        <ul role="menu-bar" style="flex-direction: column; width: 200px;">
+        <ul role="menu-bar" class="flex-col w-[200px]">
           {#each Object.keys(guide.contents) as key, pageIndex}
             <button
               class="btn spaced page {currentPage == pageIndex && 'active'}"
               on:click={() => (currentPage = pageIndex)}>{key}</button
             >
           {/each}
-          <div style="margin-top: 5px; margin-bottom: 5px"></div>
-          <button class="btn spaced" on:click={() => movePage(-1)}
+          <div class="mt-1 mb-1" />
+          <button class="btn spaced page" on:click={() => movePage(-1)}
             >Move up</button
           >
-          <button class="btn spaced" on:click={() => movePage(1)}
+          <button class="btn spaced page" on:click={() => movePage(1)}
             >Move down</button
           >
-          <div style="margin-top: 5px; margin-bottom: 5px"></div>
+          <div class="mt-1 mb-1" />
           <button
-            class="btn spaced"
+            class="btn spaced page"
             on:click={newPage}
             disabled={Object.keys(guide.contents).length == 4}>New page</button
           >
-          <button id="rename-page" class="btn spaced" on:click={renamePage}
+          <button id="rename-page" class="btn spaced page" on:click={renamePage}
             >Rename page</button
           >
           <button
-            class="btn spaced"
+            class="btn spaced page"
             disabled={Object.keys(guide.contents).length == 1}
             on:click={deletePage}>Delete page</button
           >
@@ -266,13 +262,13 @@
         <textarea
           spellcheck="false"
           maxlength="1992"
-          style="width: 100%; min-height: 400px; resize: none"
+          class="w-full min-h-[400px] resize-none text-sm font-[monospace] leading-4 p-1 border-2 border-black rounded-sm"
           bind:value={guide.contents[Object.keys(guide.contents)[currentPage]]}
         ></textarea>
       </div>
-      <div style="height: 10px"></div>
+      <div class="mt-1 mb-1" />
     {/if}
-    <section class="field-row" style="justify-content: flex-end">
+    <section class="field-row justify-end">
       <button class="btn" on:click={toggleVisibility}>
         {#if guide.public}Public{:else}Private{/if}
       </button>
