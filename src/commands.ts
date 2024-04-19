@@ -5,7 +5,6 @@ import {
   ModalSubmitInteraction,
   SlashCommandBuilder,
 } from "discord.js";
-import backup from "./commands/backup";
 import guide from "./commands/guide";
 import leaderboard from "./commands/leaderboard";
 import progress from "./commands/progress";
@@ -26,5 +25,5 @@ export default {
   guide,
   leaderboard,
   progress,
-  backup,
+  // backup,
 } as Record<string, Command>;
