@@ -206,7 +206,7 @@ export default {
 
       const serverInput = new TextInputBuilder()
         .setCustomId("server")
-        .setLabel("Server [EUW | EUNE | NA | OCE | TR | RU | KR]")
+        .setLabel("Server [EUW,EUNE,LAS,NA,OCE,TR,RU,KR]")
         .setPlaceholder("euw")
         .setMaxLength(4)
         .setStyle(TextInputStyle.Short);

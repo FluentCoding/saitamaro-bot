@@ -88,6 +88,7 @@ export function regionFromStr(region: string) {
   return {
     euw: PlatformId.EUW1,
     eune: PlatformId.EUNE1,
+    las: PlatformId.LA2,
     na: PlatformId.NA1,
     oce: PlatformId.OC1,
     tr: PlatformId.TR1,
