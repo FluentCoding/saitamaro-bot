@@ -1,12 +1,14 @@
 import {
+  APIEmbed,
   ActionRowBuilder,
   ButtonInteraction,
   ChatInputCommandInteraction,
   Client,
   Colors,
   DiscordAPIError,
-  EmbedBuilder,
   MessageActionRowComponentBuilder,
+  MessageCreateOptions,
+  MessageEditOptions,
   ModalActionRowComponentBuilder,
   ModalBuilder,
   ModalSubmitInteraction,
@@ -35,7 +37,7 @@ import { ButtonMetadata, createButton } from "../util/discord";
 import { sortRank, withPlacePrefix, withRankEmoji } from "../util/rank";
 import timestring = require("timestring");
 
-const LIMIT = 20;
+const LIMIT = 10;
 const REFRESH_INTERVAL = timestring("1h", "ms");
 let currentUpdater: { timeout: Timer; nextUpdate: number } | undefined =
   undefined;
@@ -66,10 +68,39 @@ async function updateLeaderboardMessage(client: Client<true>) {
     const channel = (await client.channels.fetch(
       messageLocation.channelId
     )) as TextChannel | null;
-    await channel?.messages.edit(
-      messageLocation.messageId,
-      await renderLeaderboard(client)
-    );
+    if (channel == null) {
+      console.error("Channel doesn't exist");
+      return;
+    }
+
+    const messages = await renderLeaderboard(client);
+    let newMessageIds = [];
+    for (
+      let i = 0;
+      i < Math.max(messageLocation.messageIds.length, messages.length);
+      i++
+    ) {
+      const shouldDelete = i >= messages.length,
+        shouldAdd = i >= messageLocation.messageIds.length,
+        currentMessageId = messageLocation.messageIds[i],
+        messageToSend = messages[i];
+      if (shouldDelete) {
+        await channel.messages.delete(currentMessageId);
+      } else if (shouldAdd) {
+        let res = await channel.send(messageToSend as MessageCreateOptions);
+        newMessageIds.push(res.id);
+      } else {
+        await channel.messages.edit(
+          currentMessageId,
+          messages[i] as MessageEditOptions
+        );
+        newMessageIds.push(currentMessageId);
+      }
+    }
+    setLeaderboardMessageLocation({
+      ...messageLocation,
+      messageIds: newMessageIds,
+    });
   } catch (e) {
     console.error("Failed to update leaderboard message", e);
   }
@@ -112,7 +143,6 @@ async function renderLeaderboard(client: Client<true>) {
   )
     .filter((entry) => entry.displayName != undefined)
     .sort((a, b) => sortRank(a.rank, b.rank))
-    .slice(0, LIMIT)
     .map((entry, i) => [
       `**[OPGG](https://op.gg/summoners/${entry.region}/${(entry.tag ?? "")
         .replaceAll("#", "-")
@@ -121,45 +151,57 @@ async function renderLeaderboard(client: Client<true>) {
         entry.displayName!
       )}`,
       withRankEmoji(entry.rank),
-    ]);
-  return {
-    embeds: [
-      new EmbedBuilder({
-        color: Colors.Aqua,
-        title: `SoloQ Leaderboards (Top ${LIMIT})`,
-        fields: [
-          {
-            name: "Players",
-            value: Object.values(leaderboard)
-              .map((pair) => pair[0])
-              .join("\n"),
-            inline: true,
-          },
-          {
-            name: "Rank",
-            value: Object.values(leaderboard)
-              .map((pair) => pair[1])
-              .join("\n"),
-            inline: true,
-          },
-        ],
-        description: `Updates <t:${Math.round(
-          currentUpdater
-            ? currentUpdater.nextUpdate / 1000
-            : +new Date() / 1000 + REFRESH_INTERVAL / 1000
-        )}:R>`,
-        timestamp: new Date(),
-      }),
-    ],
-    components: [
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        createButton("Your connection", {
-          cmd: "leaderboard",
-          tag: "config",
-        })
-      ),
-    ],
-  };
+    ]) satisfies [string, string][];
+
+  let messages: (MessageCreateOptions | MessageEditOptions)[] = [];
+  for (let i = 0; i < leaderboard.length; i += LIMIT) {
+    messages.push({
+      embeds: [
+        {
+          color: Colors.Aqua,
+          fields: [
+            {
+              name: "Players",
+              value: Object.values(leaderboard)
+                .map((pair) => pair[0])
+                .slice(i, i + LIMIT)
+                .join("\n"),
+              inline: true,
+            },
+            {
+              name: "Rank",
+              value: Object.values(leaderboard)
+                .map((pair) => pair[1])
+                .slice(i, i + LIMIT)
+                .join("\n"),
+              inline: true,
+            },
+          ],
+        },
+      ],
+      components: [],
+    });
+  }
+
+  const firstMessageEmbed = messages[0].embeds![0] as APIEmbed,
+    lastMessage = messages[messages.length - 1];
+  firstMessageEmbed.title = "SoloQ Leaderboards";
+  firstMessageEmbed.description = `Updates <t:${Math.round(
+    currentUpdater
+      ? currentUpdater.nextUpdate / 1000
+      : +new Date() / 1000 + REFRESH_INTERVAL / 1000
+  )}:R>`;
+  lastMessage.components = [
+    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+      createButton("Your connection", {
+        cmd: "leaderboard",
+        tag: "config",
+      })
+    ),
+  ];
+  (lastMessage.embeds![0] as APIEmbed).timestamp = new Date().toISOString();
+
+  return messages;
 }
 
 export default {
@@ -173,12 +215,17 @@ export default {
         content: "Sending leaderboard...",
         ephemeral: true,
       });
-      let res = await interaction.channel!.send(
-        await renderLeaderboard(interaction.client)
-      );
+      const leaderboardMessages = await renderLeaderboard(interaction.client);
+      let result = [];
+
+      for (const msg of leaderboardMessages) {
+        result.push(
+          await interaction.channel!.send(msg as MessageCreateOptions)
+        );
+      }
       await setLeaderboardMessageLocation({
         channelId: interaction.channelId,
-        messageId: res.id,
+        messageIds: result.map((m) => m.id),
       });
       runLeaderboardUpdater(interaction.client); // (re-)start message updater cycle
       await interaction.deleteReply();
