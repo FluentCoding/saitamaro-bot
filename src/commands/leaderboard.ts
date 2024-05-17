@@ -20,6 +20,8 @@ import {
 } from "discord.js";
 import { guildId } from "../../.env.json";
 import {
+  ClearRankedSummonersCacheMode,
+  clearRankedSummonersCache,
   getSoloDuoRank,
   getSummonerID,
   getSummonerNickname,
@@ -48,18 +50,21 @@ export async function runLeaderboardUpdater(
 ) {
   if (!(await getLeaderboardMessageLocation())) return; // ignore updater request if no message location exists
   if (currentUpdater) clearInterval(currentUpdater.timeout);
-  if (runImmediately) updateLeaderboardMessage(client);
+  if (runImmediately) updateLeaderboardMessage(client, "all");
   currentUpdater = {
     timeout: setInterval(function () {
       if (currentUpdater) {
         currentUpdater.nextUpdate = +new Date() + REFRESH_INTERVAL;
       }
-      updateLeaderboardMessage(client);
+      updateLeaderboardMessage(client, "all");
     }, REFRESH_INTERVAL),
     nextUpdate: +new Date() + REFRESH_INTERVAL,
   };
 }
-async function updateLeaderboardMessage(client: Client<true>) {
+async function updateLeaderboardMessage(
+  client: Client<true>,
+  refetch: ClearRankedSummonersCacheMode
+) {
   try {
     console.info("Triggering leaderboard update!");
     const messageLocation = await getLeaderboardMessageLocation();
@@ -73,8 +78,9 @@ async function updateLeaderboardMessage(client: Client<true>) {
       return;
     }
 
+    clearRankedSummonersCache(refetch);
     const messages = await renderLeaderboard(client);
-    let newMessageIds = [];
+    const newMessageIds = [];
     for (
       let i = 0;
       i < Math.max(messageLocation.messageIds.length, messages.length);
@@ -216,8 +222,7 @@ export default {
         ephemeral: true,
       });
       const leaderboardMessages = await renderLeaderboard(interaction.client);
-      let result = [];
-
+      const result = [];
       for (const msg of leaderboardMessages) {
         result.push(
           await interaction.channel!.send(msg as MessageCreateOptions)
@@ -295,7 +300,7 @@ export default {
       if (!summonerName) {
         if (leaderboardEntry) {
           await removeLeaderboardEntry(discordId);
-          await updateLeaderboardMessage(interaction.client);
+          await updateLeaderboardMessage(interaction.client, "none");
           await interaction.editReply({
             content: "You have been removed from the leaderboards!",
           });
@@ -327,7 +332,9 @@ export default {
           ? "Your leaderboard connection has been updated!"
           : "You have been added to the leaderboards!",
       });
-      await updateLeaderboardMessage(interaction.client);
+      await updateLeaderboardMessage(interaction.client, {
+        userId: summonerId,
+      });
     } catch (e) {
       console.error("Failed to handle modal submit", e);
       await interaction.editReply({ content: "Failed to handle modal submit" });

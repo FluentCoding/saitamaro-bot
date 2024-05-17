@@ -1,4 +1,4 @@
-import { PlatformId, RiotAPI } from "@fightmegg/riot-api";
+import { PlatformId, RiotAPI, RiotAPITypes } from "@fightmegg/riot-api";
 import { apiKey } from "../../../.env.json";
 
 const rAPI = new RiotAPI(apiKey);
@@ -97,11 +97,36 @@ export function regionFromStr(region: string) {
   }[region] as LoLRegion | undefined;
 }
 
+let rankedCache: Record<string, RiotAPITypes.League.LeagueEntryDTO> = {};
 async function getRankedSummonerEntry(region: LoLRegion, summonerId: string) {
-  return (
-    await rAPI.league.getEntriesBySummonerId({
-      region,
-      summonerId,
-    })
-  ).filter((v) => v.queueType == RANKED_TOKEN)[0];
+  if (summonerId in rankedCache) {
+    console.debug("Requesting ranked info of", summonerId, "from cache.");
+    return rankedCache[summonerId];
+  } else {
+    console.debug("Requesting ranked info of", summonerId, "from riot's API.");
+    const res = (
+      await rAPI.league.getEntriesBySummonerId({
+        region,
+        summonerId,
+      })
+    ).filter((v) => v.queueType == RANKED_TOKEN)[0];
+    rankedCache[summonerId] = res;
+    return res;
+  }
+}
+
+export type ClearRankedSummonersCacheMode = { userId: string } | "all" | "none";
+export async function clearRankedSummonersCache(
+  clearMode: ClearRankedSummonersCacheMode
+) {
+  switch (clearMode) {
+    case "none":
+      return;
+    case "all":
+      rankedCache = {};
+      break;
+    default:
+      delete rankedCache[clearMode.userId];
+      break;
+  }
 }
