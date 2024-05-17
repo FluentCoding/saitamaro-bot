@@ -114,7 +114,7 @@ async function renderLeaderboard(client: Client<true>) {
     .sort((a, b) => sortRank(a.rank, b.rank))
     .slice(0, LIMIT)
     .map((entry, i) => [
-      `**[OPGG](https://www.op.gg/summoners/${entry.region}/${(entry.tag ?? "")
+      `**[OPGG](https://op.gg/summoners/${entry.region}/${(entry.tag ?? "")
         .replaceAll("#", "-")
         .replaceAll(" ", "%20")})** ${withPlacePrefix(
         i + 1,
