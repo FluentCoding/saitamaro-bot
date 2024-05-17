@@ -167,7 +167,7 @@ async function renderLeaderboard(client: Client<true>) {
           color: Colors.Aqua,
           fields: [
             {
-              name: "Players",
+              name: i == 0 ? "Players" : "\u200b",
               value: Object.values(leaderboard)
                 .map((pair) => pair[0])
                 .slice(i, i + LIMIT)
@@ -175,7 +175,7 @@ async function renderLeaderboard(client: Client<true>) {
               inline: true,
             },
             {
-              name: "Rank",
+              name: i == 0 ? "Rank" : "\u200b",
               value: Object.values(leaderboard)
                 .map((pair) => pair[1])
                 .slice(i, i + LIMIT)
