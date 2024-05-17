@@ -82,13 +82,13 @@ async function updateLeaderboardMessage(client: Client<true>) {
     ) {
       const shouldDelete = i >= messages.length,
         shouldAdd = i >= messageLocation.messageIds.length,
-        currentMessageId = messageLocation.messageIds[i],
-        messageToSend = messages[i];
+        currentMessageId = messageLocation.messageIds[i];
       if (shouldDelete) {
         await channel.messages.delete(currentMessageId);
       } else if (shouldAdd) {
-        let res = await channel.send(messageToSend as MessageCreateOptions);
-        newMessageIds.push(res.id);
+        newMessageIds.push(
+          (await channel.send(messages[i] as MessageCreateOptions)).id
+        );
       } else {
         await channel.messages.edit(
           currentMessageId,
