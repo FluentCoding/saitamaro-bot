@@ -266,7 +266,9 @@ export default {
         .setCustomId("server")
         .setLabel("Server [EUW,EUNE,LAS,NA,OCE,TR,RU,KR]")
         .setPlaceholder("euw")
+        .setValue(leaderboardEntry?.region ?? "")
         .setMaxLength(4)
+        .setRequired(false)
         .setStyle(TextInputStyle.Short);
 
       const firstActionRow =
