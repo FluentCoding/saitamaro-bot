@@ -251,10 +251,12 @@ export default {
         .setPlaceholder("AAA#000")
         .setValue(
           leaderboardEntry?.id
-            ? (await getSummonerNickname(
-                regionFromStr(leaderboardEntry.region)!,
-                leaderboardEntry.id
-              )) ?? ""
+            ? leaderboardEntry.tag ??
+                (await getSummonerNickname(
+                  regionFromStr(leaderboardEntry.region)!,
+                  leaderboardEntry.id
+                )) ??
+                ""
             : ""
         )
         // https://support-leagueoflegends.riotgames.com/hc/en-us/articles/360041788533-Riot-ID-FAQ#:~:text=Game%20Names%20must,OC1%2C%20and%20NA1.
