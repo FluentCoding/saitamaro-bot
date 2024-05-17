@@ -18,7 +18,6 @@ import {
 } from "discord.js";
 import { guildId } from "../../.env.json";
 import {
-  LolRank,
   getSoloDuoRank,
   getSummonerID,
   getSummonerNickname,
@@ -77,49 +76,52 @@ async function updateLeaderboardMessage(client: Client<true>) {
 }
 async function renderLeaderboard(client: Client<true>) {
   const leaderboard = (
-    (
-      await Promise.all(
-        Object.entries(await getLeaderboard()).map(
-          async ([discordId, entry]) => {
-            const member = await client.guilds.cache
-              .get(guildId)
-              ?.members.fetch(discordId)
-              .catch(async (e: DiscordAPIError) => {
-                const reason =
-                  e.code == 10013
-                    ? "unknown"
-                    : e.code == 10007
-                    ? "left"
-                    : undefined;
-                if (!reason) return undefined; // don't delete if it's any error but unknown user/member
-                console.error(
-                  `Seems like ${
-                    (
-                      await client.users.fetch(discordId).catch((_) => ({
-                        displayName: undefined,
-                      }))
-                    ).displayName ?? "a deleted user"
-                  } left the server, removing from leaderboard (reason: ${reason})`
-                );
-                await removeLeaderboardEntry(discordId);
-                return undefined;
-              });
-            return [
-              member?.displayName,
-              await getSoloDuoRank(regionFromStr(entry.region)!, entry.id),
-            ];
-          }
-        )
-      )
-    ).filter(([name]) => name != undefined) as [string, LolRank][]
+    await Promise.all(
+      Object.entries(await getLeaderboard()).map(async ([discordId, entry]) => {
+        const member = await client.guilds.cache
+          .get(guildId)
+          ?.members.fetch(discordId)
+          .catch(async (e: DiscordAPIError) => {
+            const reason =
+              e.code == 10013
+                ? "unknown"
+                : e.code == 10007
+                ? "left"
+                : undefined;
+            if (!reason) return undefined; // don't delete if it's any error but unknown user/member
+            console.error(
+              `Seems like ${
+                (
+                  await client.users.fetch(discordId).catch((_) => ({
+                    displayName: undefined,
+                  }))
+                ).displayName ?? "a deleted user"
+              } left the server, removing from leaderboard (reason: ${reason})`
+            );
+            await removeLeaderboardEntry(discordId);
+            return undefined;
+          });
+        return {
+          displayName: member?.displayName,
+          tag: entry.tag,
+          region: entry.region,
+          rank: await getSoloDuoRank(regionFromStr(entry.region)!, entry.id),
+        };
+      })
+    )
   )
-    .sort((a, b) => sortRank(a[1], b[1]))
+    .filter((entry) => entry.displayName != undefined)
+    .sort((a, b) => sortRank(a.rank, b.rank))
     .slice(0, LIMIT)
-    .map((pair, i) => [
-      withPlacePrefix(i + 1, pair[0]),
-      withRankEmoji(pair[1]),
+    .map((entry, i) => [
+      `**[OPGG](https://www.op.gg/summoners/${entry.region}/${(entry.tag ?? "")
+        .replaceAll("#", "-")
+        .replaceAll(" ", "%20")})** ${withPlacePrefix(
+        i + 1,
+        entry.displayName!
+      )}`,
+      withRankEmoji(entry.rank),
     ]);
-  const lines = (v: string[]) => v.reduce((a, b) => `${a}\n${b}`, "").slice(1);
   return {
     embeds: [
       new EmbedBuilder({
@@ -128,12 +130,16 @@ async function renderLeaderboard(client: Client<true>) {
         fields: [
           {
             name: "Players",
-            value: lines(Object.values(leaderboard).map((pair) => pair[0])),
+            value: Object.values(leaderboard)
+              .map((pair) => pair[0])
+              .join("\n"),
             inline: true,
           },
           {
             name: "Rank",
-            value: lines(Object.values(leaderboard).map((pair) => pair[1])),
+            value: Object.values(leaderboard)
+              .map((pair) => pair[1])
+              .join("\n"),
             inline: true,
           },
         ],

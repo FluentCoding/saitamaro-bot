@@ -28,6 +28,6 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node-fetch-cache": "^3.0.4",
     "@types/timestring": "^6.0.5",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   }
 }
