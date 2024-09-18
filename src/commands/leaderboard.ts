@@ -138,16 +138,22 @@ async function renderLeaderboard(client: Client<true>) {
             await removeLeaderboardEntry(discordId);
             return undefined;
           });
+        if (!member) return undefined;
+        const region = regionFromStr(entry.region)!;
+        const rank = await getSoloDuoRank(region, entry.id);
+        const refreshedTag = await getSummonerNickname(region, entry.id);
+        const tag = refreshedTag ?? entry.tag;
+
         return {
-          displayName: member?.displayName,
-          tag: entry.tag,
+          displayName: member.displayName,
+          tag: tag,
           region: entry.region,
-          rank: await getSoloDuoRank(regionFromStr(entry.region)!, entry.id),
+          rank,
         };
       })
     )
   )
-    .filter((entry) => entry.displayName != undefined)
+    .filter((entry) => entry !== undefined)
     .sort((a, b) => sortRank(a.rank, b.rank))
     .map((entry, i) => [
       `**[OPGG](https://op.gg/summoners/${entry.region}/${(entry.tag ?? "")
