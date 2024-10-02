@@ -47,5 +47,7 @@ export const withPlacePrefix = (place: number, suffix: string) => {
 export const withRankEmoji = (rank: LolRank) => {
   if (rank.tier == "Unranked") return `${tiers[rank.tier].tag}Unranked`;
   if (rank.lp == -1) return `Riot communication error (? LP)`;
-  return `${tiers[rank.tier].tag}${rank.tier} ${rank.rank} (${rank.lp} LP)`;
+  return `${tiers[rank.tier].tag}${rank.tier} ${rank.rank} (${rank.lp} LP) [${
+    rank.wl[0]
+  }W/${rank.wl[1]}L]`;
 };

@@ -23,22 +23,28 @@ export type LoLRegion =
   | PlatformId.TH2
   | PlatformId.TW2
   | PlatformId.VN2;
-export type LolRank = { tier: string; rank: string; lp: number };
+export type LolRank = {
+  tier: string;
+  rank: string;
+  lp: number;
+  wl: [number, number];
+};
 export async function getSoloDuoRank(
   region: LoLRegion,
   summonerId: string
 ): Promise<LolRank> {
   try {
     const summoner = await getRankedSummonerEntry(region, summonerId);
-    if (!summoner) return { tier: `Unranked`, rank: "", lp: 0 };
+    if (!summoner) return { tier: `Unranked`, rank: "", lp: 0, wl: [0, 0] };
     return {
       tier: `${summoner.tier[0]}${summoner.tier.slice(1).toLowerCase()}`,
       rank: summoner.rank,
       lp: summoner.leaguePoints,
+      wl: [summoner.wins, summoner.losses],
     };
   } catch (e) {
     console.error(`Couldn't fetch rank of summoner ${summonerId}`);
-    return { tier: `error`, rank: "error", lp: -1 };
+    return { tier: `error`, rank: "error", lp: -1, wl: [0, 0] };
   }
 }
 
