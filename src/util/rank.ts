@@ -70,5 +70,5 @@ export const withRankEmoji = (rank: LolRank) => {
   if (rank.lp == -1) return `Riot communication error (? LP)`;
   return `${tiers[rank.tier].tag}${abbreviatedTier[rank.tier]}${
     romanNumeralsToLatin[rank.rank]
-  } ${rank.lp} LP *${rank.wl[0]}W | ${rank.wl[1]}L*`;
+  } ${rank.lp} LP *${rank.wl[0]}W ${rank.wl[1]}L*`;
 };
