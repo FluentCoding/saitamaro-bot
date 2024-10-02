@@ -18,6 +18,27 @@ const tiers: Record<string, { value: number; tag: string }> =
     ].map((v, i, a) => [v[0], { value: a.length - i, tag: v[1] }])
   );
 
+const abbreviatedTier: Record<string, string> = {
+  Challenger: "C",
+  Grandmaster: "GM",
+  Master: "M",
+  Diamond: "D",
+  Emerald: "E",
+  Platinum: "P",
+  Gold: "G",
+  Silver: "S",
+  Bronze: "B",
+  Iron: "I",
+};
+
+const romanNumeralsToLatin: Record<string, string> = {
+  I: "1",
+  II: "2",
+  III: "3",
+  IV: "4",
+  "": "",
+};
+
 const divs: Record<string, number> = {
   I: 3,
   II: 2,
@@ -47,7 +68,7 @@ export const withPlacePrefix = (place: number, suffix: string) => {
 export const withRankEmoji = (rank: LolRank) => {
   if (rank.tier == "Unranked") return `${tiers[rank.tier].tag}Unranked`;
   if (rank.lp == -1) return `Riot communication error (? LP)`;
-  return `${tiers[rank.tier].tag}${rank.tier} ${rank.rank} (${rank.lp} LP) [${
-    rank.wl[0]
-  }W/${rank.wl[1]}L]`;
+  return `${tiers[rank.tier].tag}${abbreviatedTier[rank.tier]}${
+    romanNumeralsToLatin[rank.rank]
+  } ${rank.lp} LP **[${rank.wl[0]}W/${rank.wl[1]}L]**`;
 };
