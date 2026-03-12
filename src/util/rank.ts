@@ -4,18 +4,18 @@ const tiers: Record<string, { value: number; tag: string }> =
   Object.fromEntries(
     [
       ["Challenger", "<:lolrankchallenger:1176986263878893699>"],
-      ["Grandmaster", "<:lolrankgrandmaster:1176986266181582921>"],
-      ["Master", "<:lolrankmaster:1176986267720896512>"],
-      ["Diamond", "<:lolrankdiamond:1176986258858328165>"],
-      ["Emerald", "<:lolrankemerald:1176987001053003918>"],
-      ["Platinum", "<:lolrankplatinum:1176986253225365615>"],
-      ["Gold", "<:lolrankgold:1176986260741566554>"],
-      ["Silver", "<:lolranksilver:1176986310599249938>"],
-      ["Bronze", "<:lolrankbronze:1176986312151146647>"],
+      ["Grandmaster", "<:lolrankgrandmaster:1481679726622802094>"],
+      ["Master", "<:lolrankmaster:1481679754309406863>"],
+      ["Diamond", "<:lolrankdiamond:1481679660398936166>"],
+      ["Emerald", "<:lolrankemerald:1481679534217760899>"],
+      ["Platinum", "<:lolrankplatinum:1481679693873676419>"],
+      ["Gold", "<:lolrankgold:1481679792855322675>"],
+      ["Silver", "<:lolranksilver:1481679633299668992>"],
+      ["Bronze", "<:lolrankbronze:1481679841354059796>"],
       ["Iron", "<:lolrankiron:1176986198653292654>"],
       ["Unranked", "<:lolrankunranked:1213553069388992667>"],
       ["error", ""],
-    ].map((v, i, a) => [v[0], { value: a.length - i, tag: v[1] }])
+    ].map((v, i, a) => [v[0], { value: a.length - i, tag: v[1] }]),
   );
 
 const abbreviatedTier: Record<string, string> = {
