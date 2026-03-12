@@ -31,7 +31,7 @@ export type LolRank = {
 };
 export async function getSoloDuoRank(
   region: LoLRegion,
-  summonerId: string
+  summonerId: string,
 ): Promise<LolRank> {
   try {
     const summoner = await getRankedSummonerEntry(region, summonerId);
@@ -50,7 +50,7 @@ export async function getSoloDuoRank(
 
 export async function getSummonerID(
   leagueRegion: LoLRegion,
-  summonerName: string
+  summonerName: string,
 ): Promise<string | undefined> {
   try {
     const account = await rAPI.account.getByRiotId({
@@ -58,11 +58,7 @@ export async function getSummonerID(
       gameName: summonerName.slice(0, summonerName.lastIndexOf("#")),
       tagLine: summonerName.slice(summonerName.lastIndexOf("#") + 1),
     });
-    const summoner = await rAPI.summoner.getByPUUID({
-      puuid: account.puuid,
-      region: leagueRegion,
-    });
-    return summoner.id;
+    return account.puuid;
   } catch (e) {
     console.error(`Couldn't fetch summoner id of ${summonerName}`);
   }
@@ -70,23 +66,22 @@ export async function getSummonerID(
 
 export async function getSummonerNickname(
   leagueRegion: LoLRegion,
-  summonerId: string
+  puuid: string,
 ): Promise<string | undefined> {
   try {
-    const summoner = await rAPI.summoner.getBySummonerId({
-      region: leagueRegion,
-      summonerId,
-    });
-    if (!summoner) return;
+    // const summoner = await rAPI.summoner.getBySummonerId({
+    //   region: leagueRegion,
+    //   summonerId,
+    // });
+    // if (!summoner) return;
 
-    const puuid = summoner.puuid;
     const account = await rAPI.account.getByPUUID({
       region: nearestRegion,
       puuid,
     });
     return `${account.gameName}#${account.tagLine}`;
   } catch (e) {
-    console.error(`Couldn't fetch summoner nickname of ${summonerId}`);
+    console.error(`Couldn't fetch summoner nickname of ${puuid}`);
   }
 }
 
@@ -104,26 +99,26 @@ export function regionFromStr(region: string) {
 }
 
 let rankedCache: Record<string, RiotAPITypes.League.LeagueEntryDTO> = {};
-async function getRankedSummonerEntry(region: LoLRegion, summonerId: string) {
-  if (summonerId in rankedCache) {
-    console.debug("Requesting ranked info of", summonerId, "from cache.");
-    return rankedCache[summonerId];
+async function getRankedSummonerEntry(region: LoLRegion, puuid: string) {
+  if (puuid in rankedCache) {
+    console.debug("Requesting ranked info of", puuid, "from cache.");
+    return rankedCache[puuid];
   } else {
-    console.debug("Requesting ranked info of", summonerId, "from riot's API.");
+    console.debug("Requesting ranked info of", puuid, "from riot's API.");
     const res = (
-      await rAPI.league.getEntriesBySummonerId({
+      await rAPI.league.getEntriesByPUUID({
         region,
-        summonerId,
+        puuid,
       })
     ).filter((v) => v.queueType == RANKED_TOKEN)[0];
-    rankedCache[summonerId] = res;
+    rankedCache[puuid] = res;
     return res;
   }
 }
 
 export type ClearRankedSummonersCacheMode = { userId: string } | "all" | "none";
 export async function clearRankedSummonersCache(
-  clearMode: ClearRankedSummonersCacheMode
+  clearMode: ClearRankedSummonersCacheMode,
 ) {
   switch (clearMode) {
     case "none":

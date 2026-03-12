@@ -46,7 +46,7 @@ let currentUpdater: { timeout: Timer; nextUpdate: number } | undefined =
 
 export async function runLeaderboardUpdater(
   client: Client<true>,
-  runImmediately: boolean = false
+  runImmediately: boolean = false,
 ) {
   if (!(await getLeaderboardMessageLocation())) return; // ignore updater request if no message location exists
   if (currentUpdater) clearInterval(currentUpdater.timeout);
@@ -63,7 +63,7 @@ export async function runLeaderboardUpdater(
 }
 async function updateLeaderboardMessage(
   client: Client<true>,
-  refetch: ClearRankedSummonersCacheMode
+  refetch: ClearRankedSummonersCacheMode,
 ) {
   try {
     console.info("Triggering leaderboard update!");
@@ -71,7 +71,7 @@ async function updateLeaderboardMessage(
     if (!messageLocation) return;
 
     const channel = (await client.channels.fetch(
-      messageLocation.channelId
+      messageLocation.channelId,
     )) as TextChannel | null;
     if (channel == null) {
       console.error("Channel doesn't exist");
@@ -93,12 +93,12 @@ async function updateLeaderboardMessage(
         await channel.messages.delete(currentMessageId);
       } else if (shouldAdd) {
         newMessageIds.push(
-          (await channel.send(messages[i] as MessageCreateOptions)).id
+          (await channel.send(messages[i] as MessageCreateOptions)).id,
         );
       } else {
         await channel.messages.edit(
           currentMessageId,
-          messages[i] as MessageEditOptions
+          messages[i] as MessageEditOptions,
         );
         newMessageIds.push(currentMessageId);
       }
@@ -123,8 +123,8 @@ async function renderLeaderboard(client: Client<true>) {
               e.code == 10013
                 ? "unknown"
                 : e.code == 10007
-                ? "left"
-                : undefined;
+                  ? "left"
+                  : undefined;
             if (!reason) return undefined; // don't delete if it's any error but unknown user/member
             console.error(
               `Seems like ${
@@ -133,7 +133,7 @@ async function renderLeaderboard(client: Client<true>) {
                     displayName: undefined,
                   }))
                 ).displayName ?? "a deleted user"
-              } left the server, removing from leaderboard (reason: ${reason})`
+              } left the server, removing from leaderboard (reason: ${reason})`,
             );
             await removeLeaderboardEntry(discordId);
             return undefined;
@@ -150,7 +150,7 @@ async function renderLeaderboard(client: Client<true>) {
           region: entry.region,
           rank,
         };
-      })
+      }),
     )
   )
     .filter((entry) => entry !== undefined)
@@ -160,32 +160,26 @@ async function renderLeaderboard(client: Client<true>) {
         .replaceAll("#", "-")
         .replaceAll(" ", "%20")})** ${withPlacePrefix(
         i + 1,
-        entry.displayName!
+        entry.displayName!,
       )}`,
       withRankEmoji(entry.rank),
     ]) satisfies [string, string][];
 
   let messages: (MessageCreateOptions | MessageEditOptions)[] = [];
-  for (let i = 0; i < leaderboard.length; i += LIMIT) {
+  if (leaderboard.length === 0) {
     messages.push({
       embeds: [
         {
           color: Colors.Aqua,
           fields: [
             {
-              name: i == 0 ? "Players" : "\u200b",
-              value: Object.values(leaderboard)
-                .map((pair) => pair[0])
-                .slice(i, i + LIMIT)
-                .join("\n"),
+              name: "Players",
+              value: "",
               inline: true,
             },
             {
-              name: i == 0 ? "Rank" : "\u200b",
-              value: Object.values(leaderboard)
-                .map((pair) => pair[1])
-                .slice(i, i + LIMIT)
-                .join("\n"),
+              name: "Rank",
+              value: "",
               inline: true,
             },
           ],
@@ -193,6 +187,35 @@ async function renderLeaderboard(client: Client<true>) {
       ],
       components: [],
     });
+  } else {
+    for (let i = 0; i < leaderboard.length; i += LIMIT) {
+      messages.push({
+        embeds: [
+          {
+            color: Colors.Aqua,
+            fields: [
+              {
+                name: i == 0 ? "Players" : "\u200b",
+                value: Object.values(leaderboard)
+                  .map((pair) => pair[0])
+                  .slice(i, i + LIMIT)
+                  .join("\n"),
+                inline: true,
+              },
+              {
+                name: i == 0 ? "Rank" : "\u200b",
+                value: Object.values(leaderboard)
+                  .map((pair) => pair[1])
+                  .slice(i, i + LIMIT)
+                  .join("\n"),
+                inline: true,
+              },
+            ],
+          },
+        ],
+        components: [],
+      });
+    }
   }
 
   const firstMessageEmbed = messages[0].embeds![0] as APIEmbed,
@@ -201,14 +224,14 @@ async function renderLeaderboard(client: Client<true>) {
   firstMessageEmbed.description = `Updates <t:${Math.round(
     currentUpdater
       ? currentUpdater.nextUpdate / 1000
-      : +new Date() / 1000 + REFRESH_INTERVAL / 1000
+      : +new Date() / 1000 + REFRESH_INTERVAL / 1000,
   )}:R>`;
   lastMessage.components = [
     new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       createButton("Your connection", {
         cmd: "leaderboard",
         tag: "config",
-      })
+      }),
     ),
   ];
   (lastMessage.embeds![0] as APIEmbed).timestamp = new Date().toISOString();
@@ -231,7 +254,7 @@ export default {
       const result = [];
       for (const msg of leaderboardMessages) {
         result.push(
-          await interaction.channel!.send(msg as MessageCreateOptions)
+          await interaction.channel!.send(msg as MessageCreateOptions),
         );
       }
       await setLeaderboardMessageLocation({
@@ -257,13 +280,13 @@ export default {
         .setPlaceholder("AAA#000")
         .setValue(
           leaderboardEntry?.id
-            ? leaderboardEntry.tag ??
+            ? (leaderboardEntry.tag ??
                 (await getSummonerNickname(
                   regionFromStr(leaderboardEntry.region)!,
-                  leaderboardEntry.id
+                  leaderboardEntry.id,
                 )) ??
-                ""
-            : ""
+                "")
+            : "",
         )
         // https://support-leagueoflegends.riotgames.com/hc/en-us/articles/360041788533-Riot-ID-FAQ#:~:text=Game%20Names%20must,OC1%2C%20and%20NA1.
         .setMaxLength(16 + 1 + 5)
@@ -281,11 +304,11 @@ export default {
 
       const firstActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-          summonerInput
+          summonerInput,
         );
       const secondActionRow =
         new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-          serverInput
+          serverInput,
         );
 
       modal.addComponents(firstActionRow, secondActionRow);
